@@ -57,7 +57,7 @@ function CreateProjectRoute() {
 
 function AppShell() {
   const { logout } = useAuth();
-  const { memories, create } = useMemoriesContext();
+  const { memories, create, remove } = useMemoriesContext();
   const [search, setSearch] = useState("");
   const [matchedIds, setMatchedIds] = useState<Set<string> | null>(null);
   const [searching, setSearching] = useState(false);
@@ -93,6 +93,10 @@ function AppShell() {
     return Array.from(tagSet);
   }, [memories]);
 
+  const handleDelete = async (memoryId: string) => {
+    await remove(memoryId);
+  };
+
   const handleSend = async (data: {
     text: string;
     image?: File;
@@ -119,7 +123,7 @@ function AppShell() {
             <p className="text-sm text-muted-foreground">Searching...</p>
           </div>
         )}
-        <Timeline memories={filtered} />
+        <Timeline memories={filtered} onDelete={handleDelete} />
       </div>
       <BottomBar onSend={handleSend} allTags={allTags} />
     </div>
