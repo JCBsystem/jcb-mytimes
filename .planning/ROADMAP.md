@@ -48,11 +48,11 @@ Plans:
   7. Adaptive rows: compact for text-only, larger for memories with images
   8. Bottom-bar composer for creation (chat-style: text input + image attach + send)
   9. Search bar at top filters memories by text (client-side)
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 02-01: Memory data model, Firestore operations, photo/audio upload to Storage
-- [ ] 02-02: Single-screen UI — search bar, date-grouped timeline, bottom-bar composer
+- [ ] 02-01-PLAN.md -- BottomBar composer with expand row (mood, tags, people, date, audio), sub-components, uploadAudio helper (MEM-01, MEM-02, MEM-03, MEM-04, RT-01)
+- [ ] 02-02-PLAN.md -- Expand-in-place detail view, delete with confirmation, Timeline/MemoryRow enhancements (MEM-07, BROWSE-01, BROWSE-02)
 
 **Deferred from Phase 2:**
 - MEM-05 (links as separate field) — links can live in text content
@@ -86,6 +86,6 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 1/2 | In progress | - |
+| 1. Foundation & Auth | 2/2 | Complete | 2026-03-24 |
 | 2. Memory CRUD & Real-time Feed | 0/2 | Not started | - |
 | 3. Discovery & Polish | 0/2 | Not started | - |
