@@ -70,8 +70,8 @@ export const uploadAudio = onCall(async (request) => {
       },
     });
 
-    // Serve via Firebase Hosting CDN rewrite
-    const voiceUrl = `/cdn/${projectKey}/audio/${memoryId}/${storagePath.split("/").pop()}`;
+    await file.makePublic();
+    const voiceUrl = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
 
     // 5. Update Firestore document
     const db = getFirestore();

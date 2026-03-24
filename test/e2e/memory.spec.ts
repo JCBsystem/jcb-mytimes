@@ -101,6 +101,39 @@ test.describe("Memory Detail View", () => {
   });
 });
 
+test.describe("Edit Memory", () => {
+  test("edit a memory from expanded view", async ({ page }) => {
+    const user = createTestUser();
+    await signUpAndCreateProject(page, user.email, user.password);
+
+    await createMemory(page, "Original memory text");
+
+    // Expand the memory
+    await testId(page, tid.memoryItem).first().click();
+    await expect(testId(page, tid.memoryDetail)).toBeVisible();
+
+    // Click edit button
+    await testId(page, tid.btnEditMemory).click();
+
+    // Modal should open with "Edit Memory" title and pre-filled text
+    await expect(testId(page, tid.inputMemoryText)).toBeVisible();
+    await expect(testId(page, tid.inputMemoryText)).toHaveValue(
+      "Original memory text",
+    );
+
+    // Clear and type new text
+    await testId(page, tid.inputMemoryText).clear();
+    await testId(page, tid.inputMemoryText).fill("Updated memory text");
+    await testId(page, tid.btnSendMemory).click();
+
+    // Timeline should show updated text
+    await expect(testId(page, tid.memoryItem).first()).toContainText(
+      "Updated memory text",
+      { timeout: 10000 },
+    );
+  });
+});
+
 test.describe("Delete Memory", () => {
   test("delete a memory from expanded view with confirmation", async ({
     page,

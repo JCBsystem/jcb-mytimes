@@ -16,7 +16,7 @@ cd ../test && pnpm install
 Requires:
 - Node.js 22+
 - pnpm
-- Firebase CLI (`npm install -g firebase-tools`)
+- Firebase CLI (`pnpm add -g firebase-tools`)
 - Logged into Firebase (`firebase login`)
 
 ## Run locally
@@ -27,6 +27,9 @@ pnpm dev
 ```
 
 The app runs at `http://localhost:5544` and connects to the live Firebase project.
+
+**Live:** https://jcb-mytime.web.app
+**Console:** https://console.firebase.google.com/project/jcb-mytime
 
 ## Deploy
 

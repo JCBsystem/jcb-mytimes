@@ -40,6 +40,7 @@ export const tid = {
 
   // Detail view & delete
   memoryDetail: "memory-detail",
+  btnEditMemory: "btn-edit-memory",
   btnDeleteMemory: "btn-delete-memory",
   confirmDialog: "confirm-dialog",
   btnConfirmDelete: "btn-confirm-delete",

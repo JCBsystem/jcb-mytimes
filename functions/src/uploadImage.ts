@@ -58,8 +58,8 @@ export const uploadImage = onCall(
         metadata: { metadata: { uploadedBy: uid, memoryId } },
       });
 
-      // Serve via Firebase Hosting CDN rewrite — no makePublic() needed
-      const imageUrl = `/cdn/${projectKey}/images/${memoryId}/${storagePath.split("/").pop()}`;
+      await file.makePublic();
+      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
 
       const db = getFirestore();
       await db
