@@ -24,7 +24,8 @@
       "Bash(pnpm remove:*)",
       "Bash(pnpm deploy:functions)",
       "Bash(npx tsc:*)",
-      "Bash(pnpm tsc:*)"
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm deploy:all)"
     ]
   }
 }

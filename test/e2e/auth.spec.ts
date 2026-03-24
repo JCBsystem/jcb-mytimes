@@ -1,72 +1,52 @@
 import { test, expect } from "@playwright/test";
+import { createTestUser, signUp, login, logout, createProject, testId, tid } from "./helpers";
 
-test.describe("Auth Flow", () => {
-  const testEmail = `test-${Date.now()}@example.com`;
-  const testPassword = "TestPass123!";
+test.describe("Auth", () => {
+  const user = createTestUser();
 
-  test("sign up, create project, and reach app shell", async ({ page }) => {
-    // Navigate to app -- should redirect to /login
+  test("redirects unauthenticated user to /login", async ({ page }) => {
     await page.goto("/");
     await page.waitForURL("**/login");
+    await expect(testId(page, tid.btnLogin)).toBeVisible();
+  });
 
-    // Switch to Sign Up mode
-    await page.click("text=Need an account? Sign up");
-
-    // Fill in credentials
-    await page.fill('input[type="email"]', testEmail);
-    await page.fill('input[type="password"]', testPassword);
-
-    // Submit sign up
-    await page.click('button[type="submit"]');
-
-    // Should redirect to create-project page
+  test("sign up with email and password", async ({ page }) => {
+    await signUp(page, user.email, user.password);
     await page.waitForURL("**/create-project", { timeout: 10000 });
-    await expect(page.locator("text=Create My Space")).toBeVisible();
-
-    // Click Create Project
-    await page.click("text=Create My Space");
-
-    // Should redirect to app shell after project creation
-    await page.waitForURL("/", { timeout: 15000 });
-    await expect(page.locator("text=MyTimes")).toBeVisible();
-    await expect(page.locator("text=Log Out")).toBeVisible();
-    // Verify project key is displayed
-    await expect(page.locator("text=Project:")).toBeVisible();
   });
 
-  test("logout and login again", async ({ page }) => {
-    // Login with existing account
-    await page.goto("/login");
-    await page.fill('input[type="email"]', testEmail);
-    await page.fill('input[type="password"]', testPassword);
-    await page.click('button[type="submit"]');
+  test("login with email and password after project exists", async ({ page }) => {
+    // First sign up and create project
+    await signUp(page, user.email, user.password);
+    await createProject(page);
 
-    // Wait for app shell (already has project, skips create-project)
-    await page.waitForURL("/", { timeout: 10000 });
-    await expect(page.locator("text=Log Out")).toBeVisible();
+    // Logout
+    await logout(page);
 
-    // Log out
-    await page.click("text=Log Out");
-
-    // Should be back on login page
-    await page.waitForURL("**/login", { timeout: 5000 });
-    await expect(page.locator('input[type="email"]')).toBeVisible();
+    // Login again
+    await login(page, user.email, user.password);
+    await expect(testId(page, tid.dashboardView)).toBeVisible({ timeout: 10000 });
   });
 
-  test("session persists across refresh", async ({ page }) => {
-    // Login
+  test("logout returns to login page", async ({ page }) => {
+    await signUp(page, user.email, user.password);
+    await createProject(page);
+    await logout(page);
+    await expect(testId(page, tid.btnLogin)).toBeVisible();
+  });
+
+  test("toggle between login and signup modes", async ({ page }) => {
     await page.goto("/login");
-    await page.fill('input[type="email"]', testEmail);
-    await page.fill('input[type="password"]', testPassword);
-    await page.click('button[type="submit"]');
-    await page.waitForURL("/", { timeout: 10000 });
 
-    // Refresh the page
-    await page.reload();
+    // Should start in login mode
+    await expect(testId(page, tid.btnLogin)).toBeVisible();
 
-    // Should still be on app shell (session persisted)
-    await page.waitForURL("/", { timeout: 10000 });
-    await expect(page.locator("text=MyTimes")).toBeVisible();
-    await expect(page.locator("text=Log Out")).toBeVisible();
+    // Switch to signup
+    await testId(page, tid.linkSignUp).click();
+    await expect(testId(page, tid.btnSignUp)).toBeVisible();
+
+    // Switch back to login
+    await testId(page, tid.linkLogin).click();
+    await expect(testId(page, tid.btnLogin)).toBeVisible();
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth.tsx";
 import { AuthForm } from "@/components/AuthForm.tsx";
@@ -9,6 +9,8 @@ import { SearchBar } from "@/components/SearchBar.tsx";
 import { Timeline } from "@/components/Timeline.tsx";
 import { BottomBar } from "@/components/BottomBar.tsx";
 import { MemoriesProvider, useMemoriesContext } from "@/lib/memories-context.tsx";
+import { searchMemories } from "@/lib/search.ts";
+import type { Memory } from "@/types/memory.ts";
 
 function LoginRoute() {
   const { user, projectKey, loading } = useAuth();
@@ -56,29 +58,51 @@ function CreateProjectRoute() {
 
 function AppShell() {
   const { logout } = useAuth();
-  const { memories, loading, create, remove } = useMemoriesContext();
+  const { memories, create } = useMemoriesContext();
   const [search, setSearch] = useState("");
+  const [searchResults, setSearchResults] = useState<Memory[] | null>(null);
+  const [searching, setSearching] = useState(false);
 
-  const filtered = search.trim()
-    ? memories.filter((m) =>
-        m.text.toLowerCase().includes(search.toLowerCase()),
-      )
-    : memories;
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query) {
+      setSearchResults(null);
+      setSearching(false);
+      return;
+    }
+
+    setSearching(true);
+    try {
+      const results = await searchMemories(query);
+      setSearchResults(results);
+    } catch (err) {
+      console.error("Search failed:", err);
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
+  }, []);
+
+  const filtered = searchResults !== null ? searchResults : memories;
 
   const handleSend = async (data: { text: string; image?: File }) => {
     await create(data);
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen" data-testid="view-dashboard">
       <div className="fixed top-0 inset-x-0 z-20 flex items-center justify-between bg-background/95 backdrop-blur-sm px-4 py-2 border-b border-border/50">
         <h1 className="text-lg font-semibold">MyTimes</h1>
-        <Button variant="ghost" size="sm" onClick={logout}>
+        <Button variant="ghost" size="sm" onClick={logout} data-testid="btn-logout">
           Log Out
         </Button>
       </div>
       <div className="pt-12">
-        <SearchBar value={search} onChange={setSearch} />
+        <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+        {searching && (
+          <div className="flex justify-center py-4">
+            <p className="text-sm text-muted-foreground">Searching...</p>
+          </div>
+        )}
         <Timeline memories={filtered} />
       </div>
       <BottomBar onSend={handleSend} />

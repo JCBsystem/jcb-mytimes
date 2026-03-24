@@ -18,6 +18,7 @@ export const tid = {
 
   // Dashboard / Home
   dashboardView: "view-dashboard",
+  btnLogout: "btn-logout",
 
   // Memory
   btnNewMemory: "btn-new-memory",
@@ -52,17 +53,23 @@ export async function goToLogin(page: Page) {
 // --- Auth ---
 
 export async function signUp(page: Page, email: string, password: string) {
-  await goToSignUp(page);
+  await page.goto("/login");
+  await testId(page, tid.linkSignUp).click();
   await testId(page, tid.inputEmail).fill(email);
   await testId(page, tid.inputPassword).fill(password);
   await testId(page, tid.btnSignUp).click();
 }
 
 export async function login(page: Page, email: string, password: string) {
-  await goToLogin(page);
+  await page.goto("/login");
   await testId(page, tid.inputEmail).fill(email);
   await testId(page, tid.inputPassword).fill(password);
   await testId(page, tid.btnLogin).click();
+}
+
+export async function logout(page: Page) {
+  await testId(page, tid.btnLogout).click();
+  await page.waitForURL("**/login");
 }
 
 // --- Project ---

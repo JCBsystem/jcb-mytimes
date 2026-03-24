@@ -1,12 +1,43 @@
+import { useEffect, useRef } from "react"
 import { Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface SearchBarProps {
   value: string
   onChange: (value: string) => void
+  onSearch: (query: string) => void
 }
 
-export function SearchBar({ value, onChange }: SearchBarProps) {
+const DEBOUNCE_MS = 300
+
+export function SearchBar({ value, onChange, onSearch }: SearchBarProps) {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Debounce the onSearch callback
+  useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+    }
+
+    timerRef.current = setTimeout(() => {
+      // Only fire search for 2+ characters or empty string (to clear)
+      if (value.trim().length >= 2 || value.trim().length === 0) {
+        onSearch(value.trim())
+      }
+    }, DEBOUNCE_MS)
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+    }
+  }, [value, onSearch])
+
+  const handleClear = () => {
+    onChange("")
+    onSearch("")
+  }
+
   return (
     <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 px-4 py-2.5">
       <div className="relative flex items-center">
@@ -23,7 +54,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
             variant="ghost"
             size="icon-xs"
             className="absolute right-1.5"
-            onClick={() => onChange("")}
+            onClick={handleClear}
           >
             <X className="size-3.5" />
           </Button>

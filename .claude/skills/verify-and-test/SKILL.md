@@ -103,7 +103,7 @@ If `data-testid` attributes are missing, list them clearly so the user can add t
 
 ## Phase 3: Generate the test
 
-Now translate your browsing session into a proper Playwright test. Follow the `create-test` skill conventions exactly.
+Translate the browsing session into a proper Playwright test. Follow the `create-test` skill conventions exactly.
 
 ### Step 1: Read current helpers
 
@@ -111,14 +111,12 @@ Read `test/e2e/helpers.ts` to see what already exists.
 
 ### Step 2: Map browser actions to test code
 
-Translate your browsing log into test operations:
-
 | Chrome action | Playwright equivalent |
 |---|---|
 | `navigate` to URL | `await page.goto("/path")` or `await page.waitForURL("**/path")` |
 | `form_input` on a field | `await testId(page, tid.inputXxx).fill("value")` |
 | `browser_click` on a button | `await testId(page, tid.btnXxx).click()` |
-| Verified text is visible | `await expect(testId(page, tid.xxx)).toBeVisible()` |
+| Verified text visible | `await expect(testId(page, tid.xxx)).toBeVisible()` |
 | Verified text content | `await expect(testId(page, tid.xxx)).toContainText("text")` |
 | Verified URL changed | `await page.waitForURL("**/expected-path")` |
 | Waited for loading | `await expect(testId(page, tid.xxx)).toBeVisible({ timeout: 10000 })` |

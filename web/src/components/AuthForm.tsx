@@ -64,6 +64,7 @@ export function AuthForm() {
             type="email"
             placeholder="Email"
             required
+            data-testid="input-email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
@@ -73,11 +74,12 @@ export function AuthForm() {
             placeholder="Password"
             minLength={6}
             required
+            data-testid="input-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
           />
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" disabled={submitting} data-testid={isSignUp ? "btn-signup" : "btn-login"}>
             {submitting
               ? "Please wait..."
               : isSignUp
@@ -90,6 +92,7 @@ export function AuthForm() {
           <button
             type="button"
             onClick={() => setIsSignUp(!isSignUp)}
+            data-testid={isSignUp ? "link-login" : "link-signup"}
             className="underline underline-offset-4 hover:text-foreground"
           >
             {isSignUp

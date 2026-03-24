@@ -2,6 +2,9 @@
   "name": "mytimes",
   "private": true,
   "scripts": {
-    "deploy:functions": "cd functions && pnpm build && firebase deploy --only functions"
+    "deploy:functions": "cd functions && pnpm build && firebase deploy --only functions",
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "deploy:web": "cd web && pnpm build && cd .. && firebase deploy --only hosting",
+    "deploy:all": "cd functions && pnpm build && cd ../web && pnpm build && cd .. && firebase deploy"
   }
 }
