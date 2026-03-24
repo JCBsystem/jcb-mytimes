@@ -49,6 +49,7 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 - **Flow**: Sign up → "Create Project" → Cloud Function sets nanoid claim → start using app
 - **Data model**: `project/{nanoidKey}/data/...` — claim-based security rules
 - **Dates**: All datetimes stored in UTC. Use dayjs on the client for parsing/formatting/display
+- **Folder structure**: `web/` for the React app, `functions/` for Firebase Cloud Functions — both at project root
 
 ## Key Decisions
 
