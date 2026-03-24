@@ -51,7 +51,7 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- BottomBar composer with expand row (mood, tags, people, date, audio), sub-components, uploadAudio helper (MEM-01, MEM-02, MEM-03, MEM-04, RT-01)
+- [x] 02-01-PLAN.md -- BottomBar composer with expand row (mood, tags, people, date, audio), sub-components, uploadAudio helper (MEM-01, MEM-02, MEM-03, MEM-04, RT-01)
 - [ ] 02-02-PLAN.md -- Expand-in-place detail view, delete with confirmation, Timeline/MemoryRow enhancements (MEM-07, BROWSE-01, BROWSE-02)
 
 **Deferred from Phase 2:**
