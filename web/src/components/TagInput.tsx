@@ -62,6 +62,7 @@ export function TagInput({ tags, onChange, allTags }: TagInputProps) {
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Add tag..."
+          data-testid="input-tag"
           className="min-w-[80px] flex-1 bg-transparent text-sm outline-none placeholder:text-stone-400"
         />
       </div>

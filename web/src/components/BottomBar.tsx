@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { ArrowUp, ImagePlus, Plus, Volume2, X } from "lucide-react"
+import { ImagePlus, Plus, Volume2, X, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MoodPicker } from "@/components/MoodPicker"
 import { TagInput } from "@/components/TagInput"
@@ -7,7 +7,6 @@ import { PeopleInput } from "@/components/PeopleInput"
 import { AudioRecorder } from "@/components/AudioRecorder"
 import { uploadAudioToMemory } from "@/lib/memories"
 import type { Memory } from "@/types/memory"
-import { cn } from "@/lib/utils"
 
 interface BottomBarProps {
   onSend: (data: {
@@ -22,70 +21,39 @@ interface BottomBarProps {
 }
 
 export function BottomBar({ onSend, allTags }: BottomBarProps) {
+  const [open, setOpen] = useState(false)
+  const [sending, setSending] = useState(false)
+
   const [text, setText] = useState("")
   const [image, setImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // Expand row state
-  const [expanded, setExpanded] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [mood, setMood] = useState<number | undefined>(undefined)
   const [people, setPeople] = useState<string[]>([])
   const [eventDate, setEventDate] = useState("")
-
-  // Audio recording state
   const [pendingAudio, setPendingAudio] = useState<{
     base64: string
     contentType: string
   } | null>(null)
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setImage(file)
-    const url = URL.createObjectURL(file)
-    setImagePreview(url)
+    setImagePreview(URL.createObjectURL(file))
   }
 
   const clearImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
     setImage(null)
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview)
-      setImagePreview(null)
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
+    setImagePreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
-  const handleSend = async () => {
-    const trimmed = text.trim()
-    if (!trimmed) return
-
-    const memory = await onSend({
-      text: trimmed,
-      image: image ?? undefined,
-      tags: tags.length > 0 ? tags : undefined,
-      mood,
-      people: people.length > 0 ? people : undefined,
-      eventDate: eventDate || undefined,
-    })
-
-    // If audio was recorded, upload it now that we have the memoryId
-    if (pendingAudio && memory?.id) {
-      try {
-        await uploadAudioToMemory(
-          memory.id,
-          pendingAudio.base64,
-          pendingAudio.contentType,
-        )
-      } catch (err) {
-        console.error("Audio upload failed:", err)
-      }
-    }
-
-    // Reset all state
+  const resetForm = () => {
     setText("")
     clearImage()
     setTags([])
@@ -93,159 +61,214 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
     setPeople([])
     setEventDate("")
     setPendingAudio(null)
-    setExpanded(false)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+  const handleSend = async () => {
+    const trimmed = text.trim()
+    if (!trimmed || sending) return
+
+    setSending(true)
+    try {
+      const memory = await onSend({
+        text: trimmed,
+        image: image ?? undefined,
+        tags: tags.length > 0 ? tags : undefined,
+        mood,
+        people: people.length > 0 ? people : undefined,
+        eventDate: eventDate || undefined,
+      })
+
+      if (pendingAudio && memory?.id) {
+        try {
+          await uploadAudioToMemory(
+            memory.id,
+            pendingAudio.base64,
+            pendingAudio.contentType,
+          )
+        } catch (err) {
+          console.error("Audio upload failed:", err)
+        }
+      }
+
+      resetForm()
+      setOpen(false)
+    } finally {
+      setSending(false)
     }
   }
 
   const canSend = text.trim().length > 0
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-10 bg-background/95 backdrop-blur-sm border-t border-border/50">
-      {/* Expand row */}
-      {expanded && (
-        <div className="space-y-3 px-4 py-3 border-b border-stone-100">
-          <div>
-            <label className="text-xs font-medium text-stone-400 uppercase tracking-wide">
-              Mood
-            </label>
-            <div className="mt-1">
-              <MoodPicker value={mood} onChange={setMood} />
-            </div>
-          </div>
+    <>
+      {/* FAB */}
+      <button
+        onClick={() => {
+          setOpen(true)
+          setTimeout(() => textareaRef.current?.focus(), 100)
+        }}
+        className="fixed bottom-6 right-5 z-20 w-14 h-14 rounded-full bg-stone-800 text-white shadow-lg shadow-stone-300/40 hover:bg-stone-700 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+        data-testid="btn-new-memory"
 
-          <div>
-            <label className="text-xs font-medium text-stone-400 uppercase tracking-wide">
-              Tags
-            </label>
-            <div className="mt-1">
-              <TagInput tags={tags} onChange={setTags} allTags={allTags} />
-            </div>
-          </div>
+      >
+        <Plus className="size-6" />
+      </button>
 
-          <div>
-            <label className="text-xs font-medium text-stone-400 uppercase tracking-wide">
-              People
-            </label>
-            <div className="mt-1">
-              <PeopleInput people={people} onChange={setPeople} />
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-stone-400 uppercase tracking-wide">
-              Date
-            </label>
-            <div className="mt-1">
-              <input
-                type="date"
-                value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)}
-                className="rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm text-stone-700 outline-none focus:ring-1 focus:ring-stone-300"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Image preview */}
-      {imagePreview && (
-        <div className="px-4 pt-3 pb-1">
-          <div className="relative inline-block">
-            <img
-              src={imagePreview}
-              alt="Selected"
-              className="h-16 w-16 rounded-lg object-cover"
-            />
-            <button
-              type="button"
-              onClick={clearImage}
-              className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-foreground/80 text-background transition-colors hover:bg-foreground"
-            >
-              <X className="size-3" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Audio indicator */}
-      {pendingAudio && (
-        <div className="px-4 py-1.5 flex items-center gap-2 text-xs text-stone-500">
-          <Volume2 className="size-3.5" />
-          <span>Audio attached</span>
-          <button
-            type="button"
-            onClick={() => setPendingAudio(null)}
-            className="ml-auto hover:text-stone-700"
-          >
-            <X className="size-3" />
-          </button>
-        </div>
-      )}
-
-      {/* Input row */}
-      <div className="flex items-end gap-2 px-4 py-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setExpanded(!expanded)}
-          className={cn(
-            "shrink-0 transition-transform",
-            expanded && "rotate-45 text-stone-600",
-          )}
+      {/* Modal overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setOpen(false)
+          }}
         >
-          <Plus className="size-5" />
-        </Button>
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => fileInputRef.current?.click()}
-          className="shrink-0 text-muted-foreground hover:text-foreground"
-        >
-          <ImagePlus className="size-5" />
-        </Button>
+          {/* Modal */}
+          <div className="relative w-full max-w-lg mx-4 mb-4 sm:mb-0 bg-white rounded-2xl shadow-2xl shadow-stone-400/20 border border-stone-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
+              <h2 className="text-sm font-bold tracking-[0.1em] text-stone-500 uppercase">
+                New Memory
+              </h2>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleImageSelect}
-          className="hidden"
-        />
+            {/* Body */}
+            <div className="px-5 py-4 space-y-5 max-h-[60vh] overflow-y-auto">
+              {/* Text */}
+              <div>
+                <textarea
+                  ref={textareaRef}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="What happened? What are you feeling?"
+                  data-testid="input-memory-text"
+                  rows={3}
+                  className="w-full bg-transparent text-stone-700 text-[15px] leading-relaxed placeholder:text-stone-300 outline-none resize-none"
+                />
+              </div>
 
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Capture a moment..."
-          data-testid="input-memory-text"
-          className="min-w-0 flex-1 rounded-full bg-muted/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none focus:bg-muted/80 focus:ring-1 focus:ring-ring/30 transition-colors"
-        />
+              {/* Image */}
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                  data-testid="input-image-file"
+                />
+                {imagePreview ? (
+                  <div className="relative inline-block" data-testid="image-preview">
+                    <img
+                      src={imagePreview}
+                      alt="Selected"
+                      className="h-24 rounded-xl object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={clearImage}
+                      className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-stone-800 text-white shadow-sm hover:bg-stone-700"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    data-testid="btn-add-image"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-stone-200 text-stone-400 text-sm hover:border-stone-300 hover:text-stone-500 transition-colors"
+                  >
+                    <ImagePlus className="size-4" />
+                    Add photo
+                  </button>
+                )}
+              </div>
 
-        <AudioRecorder
-          onRecorded={(base64, contentType) =>
-            setPendingAudio({ base64, contentType })
-          }
-        />
+              {/* Mood */}
+              <div>
+                <label className="text-[11px] font-bold tracking-[0.15em] text-stone-400 uppercase block mb-2">
+                  How are you feeling?
+                </label>
+                <MoodPicker value={mood} onChange={setMood} />
+              </div>
 
-        {canSend && (
-          <Button
-            size="icon"
-            onClick={handleSend}
-            data-testid="btn-send-memory"
-            className="shrink-0 rounded-full"
-          >
-            <ArrowUp className="size-4" />
-          </Button>
-        )}
-      </div>
-    </div>
+              {/* Tags */}
+              <div>
+                <label className="text-[11px] font-bold tracking-[0.15em] text-stone-400 uppercase block mb-2">
+                  Tags
+                </label>
+                <TagInput tags={tags} onChange={setTags} allTags={allTags} />
+              </div>
+
+              {/* People */}
+              <div>
+                <label className="text-[11px] font-bold tracking-[0.15em] text-stone-400 uppercase block mb-2">
+                  Who were you with?
+                </label>
+                <PeopleInput people={people} onChange={setPeople} />
+              </div>
+
+              {/* Date + Audio row */}
+              <div className="flex items-end gap-4">
+                <div className="flex-1">
+                  <label className="text-[11px] font-bold tracking-[0.15em] text-stone-400 uppercase block mb-2">
+                    When did this happen?
+                  </label>
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                    className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-700 outline-none focus:ring-1 focus:ring-stone-300 transition-colors"
+                  />
+                </div>
+                <div className="pb-0.5">
+                  <AudioRecorder
+                    onRecorded={(base64, contentType) =>
+                      setPendingAudio({ base64, contentType })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Audio indicator */}
+              {pendingAudio && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-50 text-xs text-stone-500" data-testid="audio-indicator">
+                  <Volume2 className="size-3.5" />
+                  <span>Voice memo attached</span>
+                  <button
+                    type="button"
+                    onClick={() => setPendingAudio(null)}
+                    className="ml-auto hover:text-stone-700"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-4 border-t border-stone-100 flex justify-end">
+              <Button
+                onClick={handleSend}
+                disabled={!canSend || sending}
+                data-testid="btn-send-memory"
+                className="rounded-xl px-6 gap-2"
+              >
+                <Send className="size-4" />
+                {sending ? "Saving..." : "Save Memory"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

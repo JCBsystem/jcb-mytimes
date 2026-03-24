@@ -23,6 +23,7 @@ export function ConfirmDialog({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       onClick={onCancel}
+      data-testid="confirm-dialog"
     >
       <div
         className="bg-white rounded-2xl shadow-xl max-w-sm mx-4 p-6 space-y-4"
@@ -31,10 +32,10 @@ export function ConfirmDialog({
         <h3 className="text-lg font-semibold text-stone-800">{title}</h3>
         <p className="text-sm text-stone-500">{description}</p>
         <div className="flex gap-3 justify-end">
-          <Button variant="ghost" onClick={onCancel}>
+          <Button variant="ghost" onClick={onCancel} data-testid="btn-cancel-delete">
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm}>
+          <Button variant="destructive" onClick={onConfirm} data-testid="btn-confirm-delete">
             {confirmLabel ?? "Delete"}
           </Button>
         </div>

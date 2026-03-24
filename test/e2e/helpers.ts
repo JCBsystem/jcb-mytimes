@@ -24,6 +24,19 @@ export const tid = {
   inputMemoryText: "input-memory-text",
   btnSendMemory: "btn-send-memory",
   memoryItem: "memory-item",
+
+  // Composer (FAB + modal)
+  btnNewMemory: "btn-new-memory",
+  moodPicker: "mood-picker",
+  inputTag: "input-tag",
+  inputPerson: "input-person",
+
+  // Detail view & delete
+  memoryDetail: "memory-detail",
+  btnDeleteMemory: "btn-delete-memory",
+  confirmDialog: "confirm-dialog",
+  btnConfirmDelete: "btn-confirm-delete",
+  btnCancelDelete: "btn-cancel-delete",
 } as const;
 
 // --- Helpers ---
@@ -83,6 +96,22 @@ export async function waitForProjectCreation(page: Page) {
 export async function signUpAndCreateProject(page: Page, email: string, password: string) {
   await signUp(page, email, password);
   await waitForProjectCreation(page);
+}
+
+// --- Memory helpers ---
+
+export async function createMemory(page: Page, text: string) {
+  await testId(page, tid.btnNewMemory).click();
+  await testId(page, tid.inputMemoryText).fill(text);
+  await testId(page, tid.btnSendMemory).click();
+  await expect(testId(page, tid.memoryItem).first()).toContainText(text, {
+    timeout: 10000,
+  });
+}
+
+export async function openComposer(page: Page) {
+  await testId(page, tid.btnNewMemory).click();
+  await expect(testId(page, tid.inputMemoryText)).toBeVisible();
 }
 
 // --- Test user factory ---

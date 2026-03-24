@@ -15,11 +15,12 @@ interface MoodPickerProps {
 
 export function MoodPicker({ value, onChange }: MoodPickerProps) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1" data-testid="mood-picker">
       {MOODS.map(({ idx, emoji }) => (
         <button
           key={idx}
           type="button"
+          data-testid={`mood-${idx}`}
           onClick={() => onChange(value === idx ? undefined : idx)}
           className={cn(
             "rounded-full p-1.5 text-xl transition-all",

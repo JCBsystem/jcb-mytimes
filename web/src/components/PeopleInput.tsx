@@ -49,6 +49,7 @@ export function PeopleInput({ people, onChange }: PeopleInputProps) {
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Add person..."
+        data-testid="input-person"
         className="min-w-[80px] flex-1 bg-transparent text-sm outline-none placeholder:text-stone-400"
       />
     </div>
