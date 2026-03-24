@@ -77,6 +77,6 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/2 | Planning complete | - |
+| 1. Foundation & Auth | 1/2 | In progress | - |
 | 2. Memory CRUD & Real-time Feed | 0/2 | Not started | - |
 | 3. Discovery & Polish | 0/2 | Not started | - |
