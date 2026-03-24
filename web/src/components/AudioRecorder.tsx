@@ -82,6 +82,7 @@ export function AudioRecorder({ onRecorded }: AudioRecorderProps) {
       variant="ghost"
       size="icon"
       onClick={toggle}
+      data-testid="btn-record-audio"
       className={recording ? "animate-pulse" : "text-muted-foreground hover:text-foreground"}
     >
       {recording ? (

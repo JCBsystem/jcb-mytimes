@@ -31,6 +31,13 @@ export const tid = {
   inputTag: "input-tag",
   inputPerson: "input-person",
 
+  // Uploads
+  btnAddImage: "btn-add-image",
+  inputImageFile: "input-image-file",
+  imagePreview: "image-preview",
+  btnRecordAudio: "btn-record-audio",
+  audioIndicator: "audio-indicator",
+
   // Detail view & delete
   memoryDetail: "memory-detail",
   btnDeleteMemory: "btn-delete-memory",

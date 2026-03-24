@@ -17,10 +17,20 @@ interface BottomBarProps {
     people?: string[]
     eventDate?: string
   }) => Promise<Memory>
+  onUpdate?: (memoryId: string, data: {
+    text: string
+    image?: File
+    tags?: string[]
+    mood?: number
+    people?: string[]
+    eventDate?: string
+  }) => Promise<void>
+  editingMemory?: Memory | null
+  onEditDone?: () => void
   allTags?: string[]
 }
 
-export function BottomBar({ onSend, allTags }: BottomBarProps) {
+export function BottomBar({ onSend, onUpdate, editingMemory, onEditDone, allTags }: BottomBarProps) {
   const [open, setOpen] = useState(false)
   const [sending, setSending] = useState(false)
 
@@ -35,9 +45,27 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
     base64: string
     contentType: string
   } | null>(null)
+  const [editId, setEditId] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Open modal in edit mode when editingMemory changes
+  const prevEditRef = useRef<string | null>(null)
+  if (editingMemory && editingMemory.id !== prevEditRef.current) {
+    prevEditRef.current = editingMemory.id
+    setEditId(editingMemory.id)
+    setText(editingMemory.text)
+    setTags(editingMemory.tags ?? [])
+    setMood(editingMemory.mood)
+    setPeople(editingMemory.people ?? [])
+    setImagePreview(editingMemory.image ?? null)
+    setImage(null) // can't reconstruct File from URL
+    const d = editingMemory.eventDate ? new Date(editingMemory.eventDate) : null
+    setEventDate(d ? d.toISOString().split("T")[0] : "")
+    setPendingAudio(null)
+    setOpen(true)
+  }
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -61,6 +89,8 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
     setPeople([])
     setEventDate("")
     setPendingAudio(null)
+    setEditId(null)
+    prevEditRef.current = null
   }
 
   const handleSend = async () => {
@@ -69,24 +99,31 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
 
     setSending(true)
     try {
-      const memory = await onSend({
+      const payload = {
         text: trimmed,
         image: image ?? undefined,
         tags: tags.length > 0 ? tags : undefined,
         mood,
         people: people.length > 0 ? people : undefined,
         eventDate: eventDate || undefined,
-      })
+      }
 
-      if (pendingAudio && memory?.id) {
-        try {
-          await uploadAudioToMemory(
-            memory.id,
-            pendingAudio.base64,
-            pendingAudio.contentType,
-          )
-        } catch (err) {
-          console.error("Audio upload failed:", err)
+      if (editId && onUpdate) {
+        await onUpdate(editId, payload)
+        onEditDone?.()
+      } else {
+        const memory = await onSend(payload)
+
+        if (pendingAudio && memory?.id) {
+          try {
+            await uploadAudioToMemory(
+              memory.id,
+              pendingAudio.base64,
+              pendingAudio.contentType,
+            )
+          } catch (err) {
+            console.error("Audio upload failed:", err)
+          }
         }
       }
 
@@ -119,7 +156,7 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
         <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setOpen(false)
+            if (e.target === e.currentTarget) { resetForm(); setOpen(false); onEditDone?.() }
           }}
         >
           {/* Backdrop */}
@@ -130,10 +167,10 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
               <h2 className="text-sm font-bold tracking-[0.1em] text-stone-500 uppercase">
-                New Memory
+                {editId ? "Edit Memory" : "New Memory"}
               </h2>
               <button
-                onClick={() => setOpen(false)}
+                onClick={() => { resetForm(); setOpen(false); onEditDone?.() }}
                 className="p-1.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
               >
                 <X className="size-4" />
@@ -263,7 +300,7 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
                 className="rounded-xl px-6 gap-2"
               >
                 <Send className="size-4" />
-                {sending ? "Saving..." : "Save Memory"}
+                {sending ? "Saving..." : editId ? "Update Memory" : "Save Memory"}
               </Button>
             </div>
           </div>
