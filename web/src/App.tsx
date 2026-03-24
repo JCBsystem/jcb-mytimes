@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth.tsx";
 import { AuthForm } from "@/components/AuthForm.tsx";
@@ -10,7 +10,6 @@ import { Timeline } from "@/components/Timeline.tsx";
 import { BottomBar } from "@/components/BottomBar.tsx";
 import { MemoriesProvider, useMemoriesContext } from "@/lib/memories-context.tsx";
 import { searchMemories } from "@/lib/search.ts";
-import type { Memory } from "@/types/memory.ts";
 
 function LoginRoute() {
   const { user, projectKey, loading } = useAuth();
@@ -60,32 +59,49 @@ function AppShell() {
   const { logout } = useAuth();
   const { memories, create } = useMemoriesContext();
   const [search, setSearch] = useState("");
-  const [searchResults, setSearchResults] = useState<Memory[] | null>(null);
+  const [matchedIds, setMatchedIds] = useState<Set<string> | null>(null);
   const [searching, setSearching] = useState(false);
 
   const handleSearch = useCallback(async (query: string) => {
     if (!query) {
-      setSearchResults(null);
+      setMatchedIds(null);
       setSearching(false);
       return;
     }
 
     setSearching(true);
     try {
-      const results = await searchMemories(query);
-      setSearchResults(results);
+      const ids = await searchMemories(query);
+      setMatchedIds(new Set(ids));
     } catch (err) {
       console.error("Search failed:", err);
-      setSearchResults([]);
+      setMatchedIds(new Set());
     } finally {
       setSearching(false);
     }
   }, []);
 
-  const filtered = searchResults !== null ? searchResults : memories;
+  // Filter listener data by server-returned IDs
+  const filtered = matchedIds !== null
+    ? memories.filter((m) => matchedIds.has(m.id))
+    : memories;
 
-  const handleSend = async (data: { text: string; image?: File }) => {
-    await create(data);
+  // Compute tag suggestions from existing memories
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    memories.forEach((m) => m.tags?.forEach((t) => tagSet.add(t)));
+    return Array.from(tagSet);
+  }, [memories]);
+
+  const handleSend = async (data: {
+    text: string;
+    image?: File;
+    tags?: string[];
+    mood?: number;
+    people?: string[];
+    eventDate?: string;
+  }) => {
+    return await create(data);
   };
 
   return (
@@ -105,7 +121,7 @@ function AppShell() {
         )}
         <Timeline memories={filtered} />
       </div>
-      <BottomBar onSend={handleSend} />
+      <BottomBar onSend={handleSend} allTags={allTags} />
     </div>
   );
 }
