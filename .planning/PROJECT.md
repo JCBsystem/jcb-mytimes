@@ -38,14 +38,15 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 
 ## Context
 
-- **Stack:** Vite + vanilla React + shadcn/ui + Firebase (Auth, Firestore, Storage)
+- **Stack:** Vite + React (TypeScript) + shadcn/ui + Firebase (Auth, Firestore, Storage)
 - **Target:** Personal use — the user is both builder and primary user
 - **Inspiration:** The feeling of stumbling on an old photo or journal entry — that spark of "oh, I remember this"
 - **Design direction:** Warm, personal, minimal — not a productivity tool aesthetic
 
 ## Constraints
 
-- **Tech stack**: Vite + React + shadcn + Firebase — chosen, non-negotiable
+- **Tech stack**: Vite + React (TypeScript) + shadcn + Firebase — chosen, non-negotiable
+- **Timeline**: 3 hours — must ship fast, cut scope aggressively
 - **Scope**: Small but meaningful slice — this is a focused build, not a full product
 - **Storage**: Firebase Storage for images, Firestore for structured data
 - **Auth**: Firebase Auth — each user gets private, isolated memories
@@ -55,8 +56,10 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Firebase as full backend | Single platform for auth, database, storage — minimal backend code | — Pending |
+| TypeScript | Type safety, better DX, catches bugs early | — Pending |
 | Rich memories over minimal | User wants text + photos + links + location + tags + mood | — Pending |
 | All four discovery modes | Timeline, search, tags, and resurfacing all in v1 | — Pending |
+| 3-hour constraint | Ship fast — coarse phases, cut scope aggressively | — Pending |
 | Responsive from start | Memories happen on the go — can't be desktop-only | — Pending |
 
 ## Evolution
