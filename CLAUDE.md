@@ -14,6 +14,7 @@ A personal memory app where users capture moments, thoughts, experiences, photos
 - **Auth**: Firebase Auth with email/password + custom claims for data isolation
 - **Flow**: Sign up → "Create Project" → Cloud Function sets nanoid claim → start using app
 - **Data model**: `project/{nanoidKey}/data/...` — claim-based security rules
+- **Deploys**: Firebase deploys are allowed for this project (override of global no-deploy rule)
 <!-- GSD:project-end -->
 
 <!-- GSD:stack-start source:STACK.md -->

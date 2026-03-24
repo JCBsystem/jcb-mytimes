@@ -2,18 +2,39 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useAuth } from "@/lib/auth.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { useToast } from "@/components/ui/toast.tsx";
+
+const friendlyErrors: Record<string, string> = {
+  "auth/email-already-in-use": "That email is already taken. Try logging in instead.",
+  "auth/invalid-email": "Please enter a valid email address.",
+  "auth/weak-password": "Password must be at least 6 characters.",
+  "auth/user-not-found": "No account found with that email.",
+  "auth/wrong-password": "Incorrect password. Please try again.",
+  "auth/invalid-credential": "Incorrect email or password. Please try again.",
+  "auth/too-many-requests": "Too many attempts. Please wait a moment and try again.",
+  "auth/network-request-failed": "Network error. Check your connection and try again.",
+  "auth/configuration-not-found": "Sign-in is not configured yet. Please contact support.",
+};
+
+function getFriendlyMessage(err: unknown): string {
+  if (err && typeof err === "object" && "code" in err) {
+    const code = (err as { code: string }).code;
+    if (friendlyErrors[code]) return friendlyErrors[code];
+  }
+  if (err instanceof Error) return err.message;
+  return "Something went wrong. Please try again.";
+}
 
 export function AuthForm() {
   const { signUp, login } = useAuth();
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError(null);
     setSubmitting(true);
     try {
       if (isSignUp) {
@@ -22,9 +43,7 @@ export function AuthForm() {
         await login(email, password);
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Something went wrong";
-      setError(message);
+      toast(getFriendlyMessage(err));
     } finally {
       setSubmitting(false);
     }
@@ -67,17 +86,10 @@ export function AuthForm() {
           </Button>
         </form>
 
-        {error && (
-          <p className="text-center text-sm text-destructive">{error}</p>
-        )}
-
         <p className="text-center text-sm text-muted-foreground">
           <button
             type="button"
-            onClick={() => {
-              setIsSignUp(!isSignUp);
-              setError(null);
-            }}
+            onClick={() => setIsSignUp(!isSignUp)}
             className="underline underline-offset-4 hover:text-foreground"
           >
             {isSignUp

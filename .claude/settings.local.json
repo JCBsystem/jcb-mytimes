@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "WebSearch",
+      "Bash(pnpx:*)",
+      "Bash(pnpm init:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm build:*)",
+      "Bash(firebase --version)",
+      "Bash(firebase projects:list)",
+      "Bash(firebase deploy:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx playwright:*)",
+      "Bash(git add:*)",
+      "Bash(rm -rf /Users/mrb/Documents/Projects/MyTimes/web/.git)",
+      "Bash(git rm:*)",
+      "Bash(git remote:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm deploy:functions)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm tsc:*)"
+    ]
+  }
+}

@@ -5,10 +5,16 @@ import { nanoid } from "nanoid";
 
 initializeApp();
 
-export const createProject = onCall(async (request) => {
+export { transcribeMemory } from "./transcribeMemory.js";
+export { uploadAudio } from "./uploadAudio.js";
+
+export const createProject = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
-    throw new HttpsError("unauthenticated", "Must be logged in to create a project.");
+    throw new HttpsError(
+      "unauthenticated",
+      "Must be logged in to create a project."
+    );
   }
 
   // Check if user already has a project key

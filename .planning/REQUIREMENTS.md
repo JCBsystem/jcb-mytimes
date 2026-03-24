@@ -7,10 +7,10 @@
 
 ### Auth & Data Isolation
 
-- [ ] **AUTH-01**: User can sign up with email/password (Firebase Auth)
-- [ ] **AUTH-02**: User can log in with email/password
-- [ ] **AUTH-03**: User can log out
-- [ ] **AUTH-04**: User clicks "Create Project" → callable Cloud Function generates nanoid key and sets it as custom claim
+- [x] **AUTH-01**: User can sign up with email/password (Firebase Auth)
+- [x] **AUTH-02**: User can log in with email/password
+- [x] **AUTH-03**: User can log out
+- [x] **AUTH-04**: User clicks "Create Project" → callable Cloud Function generates nanoid key and sets it as custom claim
 - [ ] **AUTH-05**: Firestore security rules enforce claim-based data isolation (`project/{claimKey}/...`)
 
 ### Memory CRUD
@@ -72,10 +72,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 1 | Pending |
 | MEM-01 | Phase 2 | Pending |
 | MEM-02 | Phase 2 | Pending |

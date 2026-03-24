@@ -35,20 +35,29 @@ Plans:
 - [ ] 01-02-PLAN.md -- Firestore security rules and e2e auth verification (AUTH-05)
 
 ### Phase 2: Memory CRUD & Real-time Feed
-**Goal**: Users can capture memories with text, photos, tags, moods, and links, then see them appear instantly in a live timeline
+**Goal**: Users can capture memories via a bottom-bar composer and browse them in a date-grouped timeline — all on a single screen
 **Depends on**: Phase 1
-**Requirements**: MEM-01, MEM-02, MEM-03, MEM-04, MEM-05, MEM-06, MEM-07, RT-01, BROWSE-01, BROWSE-02
+**Requirements**: MEM-01, MEM-02, MEM-03, MEM-04, MEM-07, RT-01, BROWSE-01, BROWSE-02
 **Success Criteria** (what must be TRUE):
-  1. User can create a memory with text, and optionally attach a photo, tags, mood, and link
-  2. User can edit any field of an existing memory and see changes reflected immediately
+  1. User can create a memory with text (required), and optionally attach an image, tags, people, mood (number), and audio recording
+  2. createdAt, updatedAt auto-generated (UTC); eventDate defaults to createdAt, user can override
   3. User can delete a memory and have it disappear from the timeline without refresh
   4. Photos upload to Firebase Storage and display inline in the memory
-  5. Timeline feed updates in real-time (new/edited/deleted memories appear without page reload)
+  5. Timeline feed updates in real-time via onSnapshot
+  6. Timeline is grouped by date (friendly headers), sorted by time within each group
+  7. Adaptive rows: compact for text-only, larger for memories with images
+  8. Bottom-bar composer for creation (chat-style: text input + image attach + send)
+  9. Search bar at top filters memories by text (client-side)
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Memory data model, create/edit/delete operations, photo upload to Storage
-- [ ] 02-02: Real-time listeners, timeline feed, memory detail view
+- [ ] 02-01: Memory data model, Firestore operations, photo/audio upload to Storage
+- [ ] 02-02: Single-screen UI — search bar, date-grouped timeline, bottom-bar composer
+
+**Deferred from Phase 2:**
+- MEM-05 (links as separate field) — links can live in text content
+- MEM-06 (edit) — deferred, delete is sufficient for v1
+- Audio transcription — field exists (transcript), population deferred
 
 **UI hint**: yes
 

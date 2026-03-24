@@ -1,0 +1,7 @@
+{
+  "name": "mytimes",
+  "private": true,
+  "scripts": {
+    "deploy:functions": "cd functions && pnpm build && firebase deploy --only functions"
+  }
+}
