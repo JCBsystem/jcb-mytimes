@@ -16,10 +16,11 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 
 ### Active
 
-- [ ] Firebase Auth with Google login
-- [ ] Cloud Function sets nanoid custom claim on user creation
+- [ ] Firebase Auth with email/password (sign up + login)
+- [ ] "Create Project" action calls Cloud Function → generates nanoid → sets custom claim
 - [ ] Firestore data at `project/{claimKey}/data/...`
 - [ ] Security rules enforce claim-based data isolation
+- [ ] Firestore onSnapshot listeners for real-time updates
 - [ ] Create memories with text, photo, tags, mood, links
 - [ ] Upload images to Firebase Storage
 - [ ] Timeline feed, search, tag filter, "On This Day"
@@ -27,7 +28,7 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 
 ### Out of Scope
 
-- Email/password auth — Google only for v1
+- Google OAuth — email/password only for v1
 - Sharing/social features — private app
 - Video uploads — storage cost
 - AI search — keep v1 simple
@@ -44,7 +45,8 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 
 - **Tech stack**: Vite + React (TypeScript) + shadcn + Firebase — non-negotiable
 - **Timeline**: 3 hours — ship fast, cut scope aggressively
-- **Auth**: Firebase Auth with Google + custom claims for data isolation
+- **Auth**: Firebase Auth with email/password + custom claims for data isolation
+- **Flow**: Sign up → "Create Project" → Cloud Function sets nanoid claim → start using app
 - **Data model**: `project/{nanoidKey}/data/...` — claim-based security rules
 
 ## Key Decisions
@@ -52,7 +54,10 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Nanoid custom claims for data isolation | Security rules use `request.auth.token.projectKey` — clean, scalable pattern | — Pending |
-| Cloud Function for claim assignment | Claims require Admin SDK — Cloud Function triggers on user creation | — Pending |
+| Cloud Function for claim assignment | Claims require Admin SDK — callable function triggered by "Create Project" button | — Pending |
+| Email/password auth | Simple, no OAuth config needed — fastest path | — Pending |
+| Explicit "Create Project" step | User signs up first, then creates project — separates auth from data provisioning | — Pending |
+| Firestore real-time listeners | onSnapshot at collection level — app feels instant without manual refresh | — Pending |
 | Firebase as full backend | Single platform for auth, database, storage, functions | — Pending |
 | TypeScript | Type safety, better DX | — Pending |
 | 3-hour constraint | Ship fast — coarse phases, cut scope aggressively | — Pending |

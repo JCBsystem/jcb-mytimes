@@ -7,10 +7,10 @@
 
 ### Auth & Data Isolation
 
-- [ ] **AUTH-01**: User can sign up and log in with Google (Firebase Auth)
-- [ ] **AUTH-02**: User session persists across browser refresh
+- [ ] **AUTH-01**: User can sign up with email/password (Firebase Auth)
+- [ ] **AUTH-02**: User can log in with email/password
 - [ ] **AUTH-03**: User can log out
-- [ ] **AUTH-04**: Cloud Function generates nanoid key and sets it as custom claim on user creation
+- [ ] **AUTH-04**: User clicks "Create Project" → callable Cloud Function generates nanoid key and sets it as custom claim
 - [ ] **AUTH-05**: Firestore security rules enforce claim-based data isolation (`project/{claimKey}/...`)
 
 ### Memory CRUD
@@ -54,7 +54,7 @@
 
 ### Auth
 
-- **AUTH-06**: Email/password login option
+- **AUTH-06**: Google OAuth login option
 
 ## Out of Scope
 
@@ -66,38 +66,38 @@
 | Offline support | Service workers add complexity — defer |
 | Native mobile | Web-first, responsive covers mobile |
 | Location capture | Geolocation API adds scope — defer to v2 |
-| Email/password auth | Google-only for v1 speed |
+| Google OAuth | Email/password only for v1 speed |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | - | Pending |
-| AUTH-02 | - | Pending |
-| AUTH-03 | - | Pending |
-| AUTH-04 | - | Pending |
-| AUTH-05 | - | Pending |
-| MEM-01 | - | Pending |
-| MEM-02 | - | Pending |
-| MEM-03 | - | Pending |
-| MEM-04 | - | Pending |
-| MEM-05 | - | Pending |
-| MEM-06 | - | Pending |
-| MEM-07 | - | Pending |
-| RT-01 | - | Pending |
-| BROWSE-01 | - | Pending |
-| BROWSE-02 | - | Pending |
-| DISC-01 | - | Pending |
-| DISC-02 | - | Pending |
-| DISC-03 | - | Pending |
-| UI-01 | - | Pending |
-| UI-02 | - | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| MEM-01 | Phase 2 | Pending |
+| MEM-02 | Phase 2 | Pending |
+| MEM-03 | Phase 2 | Pending |
+| MEM-04 | Phase 2 | Pending |
+| MEM-05 | Phase 2 | Pending |
+| MEM-06 | Phase 2 | Pending |
+| MEM-07 | Phase 2 | Pending |
+| RT-01 | Phase 2 | Pending |
+| BROWSE-01 | Phase 2 | Pending |
+| BROWSE-02 | Phase 2 | Pending |
+| DISC-01 | Phase 3 | Pending |
+| DISC-02 | Phase 3 | Pending |
+| DISC-03 | Phase 3 | Pending |
+| UI-01 | Phase 3 | Pending |
+| UI-02 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-24*
-*Last updated: 2026-03-24 after claims architecture + realtime listeners*
+*Last updated: 2026-03-24 -- phase mappings added after roadmap creation*
