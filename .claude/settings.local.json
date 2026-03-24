@@ -31,7 +31,8 @@
       "Bash(ls *.yaml)",
       "Bash(ls:*)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(firebase functions:log --only transcribeMemory --project jcb-mytime)"
     ]
   }
 }

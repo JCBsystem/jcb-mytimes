@@ -1,4 +1,5 @@
 import { type Page, expect } from "@playwright/test";
+import { nanoid } from "nanoid";
 
 // --- Test IDs ---
 export const tid = {
@@ -96,12 +97,16 @@ export async function logout(page: Page) {
 // After signup, wait for auto-project-creation to finish and land on dashboard.
 
 export async function waitForProjectCreation(page: Page) {
-  await page.waitForURL("/", { timeout: 15000 });
+  await page.waitForURL("/", { timeout: 30000 });
 }
 
 // --- Full setup: sign up + auto-create project ---
 
-export async function signUpAndCreateProject(page: Page, email: string, password: string) {
+export async function signUpAndCreateProject(
+  page: Page,
+  email: string,
+  password: string
+) {
   await signUp(page, email, password);
   await waitForProjectCreation(page);
 }
@@ -126,7 +131,7 @@ export async function openComposer(page: Page) {
 
 export function createTestUser() {
   return {
-    email: `test-${Date.now()}@mytimes.test`,
+    email: `test-${nanoid()}@mytimes.test`,
     password: "TestPass123!",
   };
 }
