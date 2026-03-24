@@ -26,13 +26,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. User can sign up with email/password and log in
   2. Firebase Auth persistence survives browser refresh (no manual session code)
   3. User can log out and be returned to a sign-in screen
-  4. User clicks "Create Project" → callable Cloud Function generates nanoid, sets custom claim, user can proceed
+  4. User clicks "Create Project" -> callable Cloud Function generates nanoid, sets custom claim, user can proceed
   5. Security rules reject any request where the user's claim key does not match the data path (`project/{claimKey}/...`)
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 01-01: Project scaffolding, Firebase config, Auth + Claims Cloud Function
-- [ ] 01-02: Firestore security rules and data isolation verification
+- [ ] 01-01-PLAN.md -- Auth infrastructure, hooks, UI components, routing (AUTH-01, AUTH-02, AUTH-03, AUTH-04)
+- [ ] 01-02-PLAN.md -- Firestore security rules and e2e auth verification (AUTH-05)
 
 ### Phase 2: Memory CRUD & Real-time Feed
 **Goal**: Users can capture memories with text, photos, tags, moods, and links, then see them appear instantly in a live timeline
@@ -77,6 +77,6 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/2 | Not started | - |
+| 1. Foundation & Auth | 0/2 | Planning complete | - |
 | 2. Memory CRUD & Real-time Feed | 0/2 | Not started | - |
 | 3. Discovery & Polish | 0/2 | Not started | - |
