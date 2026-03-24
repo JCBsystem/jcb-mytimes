@@ -31,5 +31,5 @@
     "context_warnings": true
   },
   "mode": "yolo",
-  "granularity": "standard"
+  "granularity": "coarse"
 }
