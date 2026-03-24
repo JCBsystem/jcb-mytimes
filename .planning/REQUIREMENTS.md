@@ -31,7 +31,7 @@
 
 ### Discovery
 
-- [ ] **DISC-01**: User can search memories by text content
+- [x] **DISC-01**: User can search memories by text content
 - [ ] **DISC-02**: User can filter memories by tag
 - [ ] **DISC-03**: User sees an "On This Day" section showing memories from the same date in previous years
 
@@ -87,7 +87,7 @@
 | RT-01 | Phase 2 | Complete |
 | BROWSE-01 | Phase 2 | Complete |
 | BROWSE-02 | Phase 2 | Complete |
-| DISC-01 | Phase 3 | Pending |
+| DISC-01 | Phase 2 (early) | Complete |
 | DISC-02 | Phase 3 | Pending |
 | DISC-03 | Phase 3 | Pending |
 | UI-01 | Phase 3 | Pending |

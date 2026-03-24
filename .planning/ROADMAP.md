@@ -64,17 +64,20 @@ Plans:
 ### Phase 3: Discovery & Polish
 **Goal**: Users can find past memories through search, tags, and on-this-day, all within a warm, responsive design
 **Depends on**: Phase 2
-**Requirements**: DISC-01, DISC-02, DISC-03, UI-01, UI-02
+**Requirements**: DISC-02, DISC-03, UI-01, UI-02
 **Success Criteria** (what must be TRUE):
-  1. User can search memories by text and see matching results
+  1. User can search memories by text and see matching results (DISC-01 — already implemented: SearchBar + searchMemories Cloud Function)
   2. User can filter the timeline by selecting a tag
   3. User sees an "On This Day" section showing memories from the same calendar date in previous years
   4. App layout is usable and attractive on both mobile (375px) and desktop (1440px)
   5. Visual design feels warm and personal, not corporate or sterile
 **Plans**: TBD
 
+**Already complete (built during Phase 2):**
+- DISC-01 (search) — SearchBar with debounce, server-side searchMemories Cloud Function (text/transcript/people/tags), wired in App.tsx
+
 Plans:
-- [ ] 03-01: Search, tag filter, on-this-day feature
+- [ ] 03-01: Tag filter, on-this-day feature
 - [ ] 03-02: Responsive layout and warm visual design pass
 
 **UI hint**: yes
@@ -87,5 +90,5 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 2/2 | Complete | 2026-03-24 |
-| 2. Memory CRUD & Real-time Feed | 0/2 | Not started | - |
+| 2. Memory CRUD & Real-time Feed | 2/2 | Complete | 2026-03-24 |
 | 3. Discovery & Polish | 0/2 | Not started | - |
