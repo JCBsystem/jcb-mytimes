@@ -1,6 +1,5 @@
 import { useRef, useState, useCallback } from "react"
-import { Mic, MicOff } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Mic, Square } from "lucide-react"
 
 interface AudioRecorderProps {
   onRecorded: (audioBase64: string, contentType: string) => void
@@ -77,19 +76,30 @@ export function AudioRecorder({ onRecorded }: AudioRecorderProps) {
     }
   }, [recording, startRecording, stopRecording])
 
+  if (recording) {
+    return (
+      <button
+        onClick={toggle}
+        data-testid="btn-record-audio"
+        className="relative flex items-center justify-center w-10 h-10 rounded-full"
+      >
+        {/* Spinning ring */}
+        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-red-500 border-r-red-300 animate-spin" />
+        {/* Pulsing glow */}
+        <div className="absolute inset-0 rounded-full bg-red-500/10 animate-pulse" />
+        {/* Stop icon */}
+        <Square className="size-4 text-red-500 fill-red-500 relative z-10" />
+      </button>
+    )
+  }
+
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <button
       onClick={toggle}
       data-testid="btn-record-audio"
-      className={recording ? "animate-pulse" : "text-muted-foreground hover:text-foreground"}
+      className="flex items-center justify-center w-10 h-10 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
     >
-      {recording ? (
-        <MicOff className="size-5 text-red-500" />
-      ) : (
-        <Mic className="size-5" />
-      )}
-    </Button>
+      <Mic className="size-5" />
+    </button>
   )
 }

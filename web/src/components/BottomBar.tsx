@@ -6,6 +6,7 @@ import { TagInput } from "@/components/TagInput"
 import { PeopleInput } from "@/components/PeopleInput"
 import { AudioRecorder } from "@/components/AudioRecorder"
 import { uploadAudioToMemory } from "@/lib/memories"
+import { toast } from "sonner"
 import type { Memory } from "@/types/memory"
 
 interface BottomBarProps {
@@ -129,6 +130,9 @@ export function BottomBar({ onSend, onUpdate, editingMemory, onEditDone, allTags
 
       resetForm()
       setOpen(false)
+    } catch (err) {
+      console.error("Save failed:", err)
+      toast.error(editId ? "Failed to update memory" : "Failed to save memory")
     } finally {
       setSending(false)
     }

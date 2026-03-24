@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth.tsx";
-import { useToast } from "@/components/ui/toast.tsx";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button.tsx";
 
 export function CreateProject() {
   const { createProject } = useAuth();
-  const { toast } = useToast();
   const [failed, setFailed] = useState(false);
   const attempted = useRef(false);
 
@@ -16,10 +15,10 @@ export function CreateProject() {
     createProject().catch((err: unknown) => {
       const message =
         err instanceof Error ? err.message : "Failed to set up your space";
-      toast(message);
+      toast.error(message);
       setFailed(true);
     });
-  }, [createProject, toast]);
+  }, [createProject]);
 
   if (failed) {
     return (

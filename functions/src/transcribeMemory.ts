@@ -6,7 +6,7 @@ import Anthropic, { toFile } from "@anthropic-ai/sdk";
 const anthropic = new Anthropic();
 
 export const transcribeMemory = onDocumentWritten(
-  "project/{projectKey}/data/memories/{memoryId}",
+  "project/{projectKey}/memories/{memoryId}",
   async (event) => {
     const afterData = event.data?.after?.data();
 
@@ -119,6 +119,12 @@ function decodeStorageUrl(url: string): string {
   const publicMatch = url.match(/storage\.googleapis\.com\/[^/]+\/(.+)/);
   if (publicMatch) {
     return decodeURIComponent(publicMatch[1]);
+  }
+
+  // CDN rewrite path: /cdn/{projectKey}/audio/{memoryId}/{filename}
+  // Maps to storage: project/{projectKey}/audio/{memoryId}/{timestamp}.{ext}
+  if (url.startsWith("/cdn/")) {
+    return "project/" + url.slice(5); // strip "/cdn/" prefix
   }
 
   // Fallback: treat the whole string as a path

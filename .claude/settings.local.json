@@ -25,7 +25,13 @@
       "Bash(pnpm deploy:functions)",
       "Bash(npx tsc:*)",
       "Bash(pnpm tsc:*)",
-      "Bash(pnpm deploy:all)"
+      "Bash(pnpm deploy:all)",
+      "Bash(pnpm --dir web build)",
+      "Bash(pnpm:*)",
+      "Bash(ls *.yaml)",
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

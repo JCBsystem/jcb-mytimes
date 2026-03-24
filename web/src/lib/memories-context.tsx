@@ -2,7 +2,7 @@ import { createContext, useContext, useCallback } from "react";
 import type { ReactNode } from "react";
 import { useAuth } from "@/lib/auth.tsx";
 import { useMemories } from "@/hooks/useMemories.ts";
-import { createMemory, deleteMemory } from "@/lib/memories.ts";
+import { createMemory, updateMemory, deleteMemory } from "@/lib/memories.ts";
 import type { Memory } from "@/types/memory.ts";
 
 interface MemoriesContextValue {
@@ -17,6 +17,14 @@ interface MemoriesContextValue {
     mood?: number;
     eventDate?: string;
   }) => Promise<Memory>;
+  update: (memoryId: string, data: {
+    text: string;
+    image?: File;
+    people?: string[];
+    tags?: string[];
+    mood?: number;
+    eventDate?: string;
+  }) => Promise<void>;
   remove: (memoryId: string) => Promise<void>;
 }
 
@@ -43,6 +51,23 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
     [projectKey],
   );
 
+  const update = useCallback(
+    async (memoryId: string, data: {
+      text: string;
+      image?: File;
+      people?: string[];
+      tags?: string[];
+      mood?: number;
+      eventDate?: string;
+    }): Promise<void> => {
+      if (!projectKey) {
+        throw new Error("No project key available");
+      }
+      return updateMemory(projectKey, memoryId, data);
+    },
+    [projectKey],
+  );
+
   const remove = useCallback(
     async (memoryId: string): Promise<void> => {
       if (!projectKey) {
@@ -54,7 +79,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <MemoriesContext value={{ memories, loading, error, create, remove }}>
+    <MemoriesContext value={{ memories, loading, error, create, update, remove }}>
       {children}
     </MemoriesContext>
   );

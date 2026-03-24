@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Memory } from "@/types/memory";
 import { formatTime } from "@/lib/date-utils";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import dayjs from "dayjs";
 
 const MOOD_EMOJI: Record<number, string> = {
@@ -18,6 +18,7 @@ interface MemoryRowProps {
   isExpanded: boolean;
   onToggle: () => void;
   onDelete: (memoryId: string) => void;
+  onEdit: (memory: Memory) => void;
 }
 
 export function MemoryRow({
@@ -25,6 +26,7 @@ export function MemoryRow({
   isExpanded,
   onToggle,
   onDelete,
+  onEdit,
 }: MemoryRowProps) {
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -47,18 +49,31 @@ export function MemoryRow({
           onClick={onToggle}
           data-testid="memory-detail"
         >
-          {/* Trash icon */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowConfirm(true);
-            }}
-            className="absolute top-4 right-4 p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors"
-            aria-label="Delete memory"
-            data-testid="btn-delete-memory"
-          >
-            <Trash2 className="size-3.5" />
-          </button>
+          {/* Action buttons */}
+          <div className="absolute top-4 right-4 flex items-center gap-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(memory);
+              }}
+              className="p-1.5 rounded-full text-stone-300 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+              aria-label="Edit memory"
+              data-testid="btn-edit-memory"
+            >
+              <Pencil className="size-3.5" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowConfirm(true);
+              }}
+              className="p-1.5 rounded-full text-stone-300 hover:text-red-400 hover:bg-red-50 transition-colors"
+              aria-label="Delete memory"
+              data-testid="btn-delete-memory"
+            >
+              <Trash2 className="size-3.5" />
+            </button>
+          </div>
 
           <div className="space-y-4 pr-8">
             {/* Full text */}

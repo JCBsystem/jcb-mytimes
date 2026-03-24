@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useAuth } from "@/lib/auth.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { useToast } from "@/components/ui/toast.tsx";
+import { toast } from "sonner";
 
 const friendlyErrors: Record<string, string> = {
   "auth/email-already-in-use": "That email is already taken. Try logging in instead.",
@@ -27,7 +27,6 @@ function getFriendlyMessage(err: unknown): string {
 
 export function AuthForm() {
   const { signUp, login } = useAuth();
-  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
@@ -43,7 +42,7 @@ export function AuthForm() {
         await login(email, password);
       }
     } catch (err: unknown) {
-      toast(getFriendlyMessage(err));
+      toast.error(getFriendlyMessage(err));
     } finally {
       setSubmitting(false);
     }
