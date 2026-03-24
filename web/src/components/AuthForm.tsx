@@ -49,11 +49,11 @@ export function AuthForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-sm space-y-6 p-8">
+    <div className="flex min-h-screen items-center justify-center px-4 bg-stone-50/40">
+      <div className="w-full max-w-sm space-y-6 p-8 bg-white rounded-2xl shadow-sm shadow-stone-200/50 border border-stone-100">
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">MyTimes</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-stone-800">MyTimes</h1>
+          <p className="text-sm text-stone-400">
             {isSignUp ? "Create your account" : "Welcome back"}
           </p>
         </div>
@@ -66,7 +66,7 @@ export function AuthForm() {
             data-testid="input-email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+            className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 placeholder:text-stone-400 outline-none focus:border-stone-300 focus:ring-2 focus:ring-stone-200/50 transition-colors"
           />
           <input
             type="password"
@@ -76,7 +76,7 @@ export function AuthForm() {
             data-testid="input-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+            className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 text-sm text-stone-700 placeholder:text-stone-400 outline-none focus:border-stone-300 focus:ring-2 focus:ring-stone-200/50 transition-colors"
           />
           <Button type="submit" disabled={submitting} data-testid={isSignUp ? "btn-signup" : "btn-login"}>
             {submitting

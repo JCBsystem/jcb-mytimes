@@ -36,8 +36,8 @@
 
 ### Design
 
-- [ ] **UI-01**: Responsive layout works on mobile and desktop
-- [ ] **UI-02**: Warm, personal visual design (not corporate/productivity)
+- [x] **UI-01**: Responsive layout works on mobile and desktop
+- [x] **UI-02**: Warm, personal visual design (not corporate/productivity)
 
 ## v2 Requirements
 
@@ -89,8 +89,8 @@
 | BROWSE-02 | Phase 2 | Complete |
 | DISC-01 | Phase 2 (early) | Complete |
 | DISC-02 | Phase 3 | Complete |
-| UI-01 | Phase 3 | Pending |
-| UI-02 | Phase 3 | Pending |
+| UI-01 | Phase 3 | Complete |
+| UI-02 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 20 total
