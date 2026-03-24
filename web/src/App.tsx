@@ -10,6 +10,10 @@ import { Timeline } from "@/components/Timeline.tsx";
 import { BottomBar } from "@/components/BottomBar.tsx";
 import { MemoriesProvider, useMemoriesContext } from "@/lib/memories-context.tsx";
 import { searchMemories } from "@/lib/search.ts";
+import { usePwaInstall } from "@/hooks/usePwaInstall.ts";
+import { Download } from "lucide-react";
+import { toast } from "sonner";
+import type { Memory } from "@/types/memory.ts";
 
 function LoginRoute() {
   const { user, projectKey, loading } = useAuth();
@@ -57,8 +61,10 @@ function CreateProjectRoute() {
 
 function AppShell() {
   const { logout } = useAuth();
-  const { memories, create, remove } = useMemoriesContext();
+  const { canInstall, install } = usePwaInstall();
+  const { memories, create, update, remove } = useMemoriesContext();
   const [search, setSearch] = useState("");
+  const [editingMemory, setEditingMemory] = useState<Memory | null>(null);
   const [matchedIds, setMatchedIds] = useState<Set<string> | null>(null);
   const [searching, setSearching] = useState(false);
 
@@ -69,19 +75,34 @@ function AppShell() {
       return;
     }
 
+    // Instant client-side filter from already-loaded memories
+    const needle = query.toLowerCase();
+    const clientIds = new Set(
+      memories
+        .filter((m) =>
+          m.text.toLowerCase().includes(needle) ||
+          m.transcript?.toLowerCase().includes(needle) ||
+          m.people?.some((p) => p.toLowerCase().includes(needle)) ||
+          m.tags?.some((t) => t.toLowerCase().includes(needle))
+        )
+        .map((m) => m.id)
+    );
+    setMatchedIds(clientIds);
+
+    // Server search in parallel — may return additional hits
     setSearching(true);
     try {
-      const ids = await searchMemories(query);
-      setMatchedIds(new Set(ids));
+      const serverIds = await searchMemories(query);
+      setMatchedIds(new Set([...clientIds, ...serverIds]));
     } catch (err) {
       console.error("Search failed:", err);
-      setMatchedIds(new Set());
+      // Keep client results on server failure
     } finally {
       setSearching(false);
     }
-  }, []);
+  }, [memories]);
 
-  // Filter listener data by server-returned IDs
+  // Filter listener data by matched IDs
   const filtered = matchedIds !== null
     ? memories.filter((m) => matchedIds.has(m.id))
     : memories;
@@ -109,23 +130,34 @@ function AppShell() {
   };
 
   return (
-    <div className="relative min-h-screen" data-testid="view-dashboard">
-      <div className="fixed top-0 inset-x-0 z-20 flex items-center justify-between bg-background/95 backdrop-blur-sm px-4 py-2 border-b border-border/50">
-        <h1 className="text-lg font-semibold">MyTimes</h1>
-        <Button variant="ghost" size="sm" onClick={logout} data-testid="btn-logout">
-          Log Out
-        </Button>
-      </div>
-      <div className="pt-12">
-        <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
-        {searching && (
-          <div className="flex justify-center py-4">
-            <p className="text-sm text-muted-foreground">Searching...</p>
+    <div className="relative min-h-screen bg-stone-50/40" data-testid="view-dashboard">
+      <div className="fixed top-0 inset-x-0 z-20 bg-white/90 backdrop-blur-md border-b border-stone-100">
+        <div className="max-w-2xl mx-auto flex items-center justify-between px-5 py-3">
+          <h1 className="text-base font-bold tracking-tight text-stone-800">MyTimes</h1>
+          <div className="flex items-center gap-1">
+            {canInstall && (
+              <Button variant="ghost" size="sm" onClick={install}>
+                <Download className="size-4 mr-1" />
+                Install
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={logout} data-testid="btn-logout">
+              Log Out
+            </Button>
           </div>
-        )}
-        <Timeline memories={filtered} onDelete={handleDelete} />
+        </div>
       </div>
-      <BottomBar onSend={handleSend} allTags={allTags} />
+      <div className="max-w-2xl mx-auto pt-14">
+        <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+        <Timeline memories={filtered} onDelete={handleDelete} onEdit={setEditingMemory} />
+      </div>
+      <BottomBar
+        onSend={handleSend}
+        onUpdate={update}
+        editingMemory={editingMemory}
+        onEditDone={() => setEditingMemory(null)}
+        allTags={allTags}
+      />
     </div>
   );
 }
