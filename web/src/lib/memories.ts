@@ -1,6 +1,7 @@
 import { collection, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { httpsCallable } from "firebase/functions";
+import { db, storage, functions } from "@/lib/firebase";
 import type { Memory } from "@/types/memory";
 
 /**
@@ -37,7 +38,7 @@ export async function createMemory(
 ): Promise<Memory> {
   const now = new Date().toISOString();
 
-  const colRef = collection(db, "project", projectKey, "data", "memories");
+  const colRef = collection(db, "project", projectKey, "memories");
   const docRef = doc(colRef);
   const memoryId = docRef.id;
 
@@ -73,6 +74,23 @@ export async function deleteMemory(
   projectKey: string,
   memoryId: string,
 ): Promise<void> {
-  const docRef = doc(db, "project", projectKey, "data", "memories", memoryId);
+  const docRef = doc(db, "project", projectKey, "memories", memoryId);
   await deleteDoc(docRef);
+}
+
+/**
+ * Upload audio to a memory via the uploadAudio Cloud Function.
+ * Returns the Storage URL of the uploaded audio file.
+ */
+export async function uploadAudioToMemory(
+  memoryId: string,
+  audioBase64: string,
+  contentType: string,
+): Promise<string> {
+  const callable = httpsCallable<
+    { memoryId: string; audioBase64: string; contentType: string },
+    { success: boolean; voiceUrl: string }
+  >(functions, "uploadAudio");
+  const result = await callable({ memoryId, audioBase64, contentType });
+  return result.data.voiceUrl;
 }
