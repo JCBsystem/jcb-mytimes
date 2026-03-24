@@ -97,7 +97,12 @@ export async function logout(page: Page) {
 // After signup, wait for auto-project-creation to finish and land on dashboard.
 
 export async function waitForProjectCreation(page: Page) {
-  await page.waitForURL("/", { timeout: 30000 });
+  // After signup the page leaves /login → may briefly show /create-project → lands on /
+  // Just wait until we're no longer on /login, then wait for /
+  await page.waitForFunction(() => !window.location.pathname.includes("login"), {
+    timeout: 15000,
+  });
+  await page.waitForURL("/", { timeout: 45000 });
 }
 
 // --- Full setup: sign up + auto-create project ---

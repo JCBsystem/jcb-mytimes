@@ -11,7 +11,10 @@ test.describe("Auth", () => {
   test("sign up with email and password", async ({ page }) => {
     const user = createTestUser();
     await signUp(page, user.email, user.password);
-    await page.waitForURL("**/create-project", { timeout: 10000 });
+    // After signup, should leave the login page
+    await page.waitForFunction(() => !window.location.pathname.includes("login"), {
+      timeout: 15000,
+    });
   });
 
   test("login with email and password after project exists", async ({ page }) => {

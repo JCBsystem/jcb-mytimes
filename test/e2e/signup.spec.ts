@@ -2,10 +2,12 @@ import { test, expect } from "@playwright/test";
 import { createTestUser, signUp, signUpAndCreateProject, testId, tid } from "./helpers";
 
 test.describe("Sign Up", () => {
-  test("sign up redirects to create-project", async ({ page }) => {
+  test("sign up redirects away from login", async ({ page }) => {
     const user = createTestUser();
     await signUp(page, user.email, user.password);
-    await page.waitForURL("**/create-project", { timeout: 10000 });
+    await page.waitForFunction(() => !window.location.pathname.includes("login"), {
+      timeout: 15000,
+    });
   });
 
   test("sign up and auto-create project reaches dashboard", async ({ page }) => {

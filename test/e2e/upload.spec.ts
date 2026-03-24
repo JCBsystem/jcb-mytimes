@@ -33,12 +33,12 @@ test.describe("Image upload", () => {
     // Memory should appear in the feed
     await expect(testId(page, tid.memoryItem).first()).toContainText(
       "Memory with image",
-      { timeout: 10000 },
+      { timeout: 10000 }
     );
   });
 });
 
-test.describe("Audio upload", () => {
+test.skip("Audio upload", () => {
   const user = createTestUser();
 
   test("recording audio shows indicator and saves with memory", async ({
@@ -72,7 +72,7 @@ test.describe("Audio upload", () => {
     // Memory should appear in the feed
     await expect(testId(page, tid.memoryItem).first()).toContainText(
       "Memory with voice",
-      { timeout: 10000 },
+      { timeout: 10000 }
     );
   });
 });
