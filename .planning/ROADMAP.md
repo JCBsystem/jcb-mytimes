@@ -31,8 +31,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Auth infrastructure, hooks, UI components, routing (AUTH-01, AUTH-02, AUTH-03, AUTH-04)
-- [ ] 01-02-PLAN.md -- Firestore security rules and e2e auth verification (AUTH-05)
+- [x] 01-01-PLAN.md -- Auth infrastructure, hooks, UI components, routing (AUTH-01, AUTH-02, AUTH-03, AUTH-04)
+- [x] 01-02-PLAN.md -- Firestore security rules and e2e auth verification (AUTH-05)
 
 ### Phase 2: Memory CRUD & Real-time Feed
 **Goal**: Users can capture memories via a bottom-bar composer and browse them in a date-grouped timeline — all on a single screen
