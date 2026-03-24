@@ -48,6 +48,7 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 - **Auth**: Firebase Auth with email/password + custom claims for data isolation
 - **Flow**: Sign up → "Create Project" → Cloud Function sets nanoid claim → start using app
 - **Data model**: `project/{nanoidKey}/data/...` — claim-based security rules
+- **Dates**: All datetimes stored in UTC. Use dayjs on the client for parsing/formatting/display
 
 ## Key Decisions
 
@@ -58,6 +59,7 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 | Email/password auth | Simple, no OAuth config needed — fastest path | — Pending |
 | Explicit "Create Project" step | User signs up first, then creates project — separates auth from data provisioning | — Pending |
 | Firestore real-time listeners | onSnapshot at collection level — app feels instant without manual refresh | — Pending |
+| dayjs for dates | Lightweight, modern, immutable — all storage in UTC, dayjs handles display conversion | — Pending |
 | Firebase as full backend | Single platform for auth, database, storage, functions | — Pending |
 | TypeScript | Type safety, better DX | — Pending |
 | 3-hour constraint | Ship fast — coarse phases, cut scope aggressively | — Pending |
