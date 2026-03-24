@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A personal memory app where users capture moments, thoughts, experiences, photos, and links — then revisit them over time. It's a private, searchable log of things that mattered to you. Each memory carries emotional context through mood tags, making revisiting feel personal rather than clinical.
+A personal memory app where users capture moments, thoughts, experiences, photos, and links — then revisit them over time. Data isolation is driven by Firebase custom claims: each user gets a nanoid-based project key set as a custom claim on signup, and all their data lives under `project/{claimKey}/data/`. Security rules enforce that users can only access their own data.
 
 ## Core Value
 
@@ -16,51 +16,46 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 
 ### Active
 
-- [ ] Firebase Auth with email/password and Google login
-- [ ] Create rich memories: text, photos, links, location, tags
-- [ ] Attach mood/emoji to each memory
+- [ ] Firebase Auth with Google login
+- [ ] Cloud Function sets nanoid custom claim on user creation
+- [ ] Firestore data at `project/{claimKey}/data/...`
+- [ ] Security rules enforce claim-based data isolation
+- [ ] Create memories with text, photo, tags, mood, links
 - [ ] Upload images to Firebase Storage
-- [ ] Store memory data in Firestore
-- [ ] Browse memories in a chronological timeline feed
-- [ ] Full-text search across all memories
-- [ ] Tag/categorize memories with user-applied labels
-- [ ] "On this day" / random memory resurfacing
-- [ ] Responsive design (works on mobile and desktop)
+- [ ] Timeline feed, search, tag filter, "On This Day"
+- [ ] Responsive design
 
 ### Out of Scope
 
-- Sharing/social features — this is a private, personal app
-- Collaborative memories — single-user ownership per memory
-- Video uploads — high storage cost, defer to future
-- AI-powered search/summarization — keep v1 simple
-- Native mobile app — web-first with responsive design
-- Offline support — requires service workers, defer to v2
+- Email/password auth — Google only for v1
+- Sharing/social features — private app
+- Video uploads — storage cost
+- AI search — keep v1 simple
+- Offline support — defer to v2
 
 ## Context
 
-- **Stack:** Vite + React (TypeScript) + shadcn/ui + Firebase (Auth, Firestore, Storage)
+- **Stack:** Vite + React (TypeScript) + shadcn/ui + Firebase (Auth, Firestore, Storage, Cloud Functions)
+- **Architecture:** Custom claims-driven data isolation — nanoid key per user, used in Firestore paths and security rules
 - **Target:** Personal use — the user is both builder and primary user
-- **Inspiration:** The feeling of stumbling on an old photo or journal entry — that spark of "oh, I remember this"
-- **Design direction:** Warm, personal, minimal — not a productivity tool aesthetic
+- **Design direction:** Warm, personal, minimal
 
 ## Constraints
 
-- **Tech stack**: Vite + React (TypeScript) + shadcn + Firebase — chosen, non-negotiable
-- **Timeline**: 3 hours — must ship fast, cut scope aggressively
-- **Scope**: Small but meaningful slice — this is a focused build, not a full product
-- **Storage**: Firebase Storage for images, Firestore for structured data
-- **Auth**: Firebase Auth — each user gets private, isolated memories
+- **Tech stack**: Vite + React (TypeScript) + shadcn + Firebase — non-negotiable
+- **Timeline**: 3 hours — ship fast, cut scope aggressively
+- **Auth**: Firebase Auth with Google + custom claims for data isolation
+- **Data model**: `project/{nanoidKey}/data/...` — claim-based security rules
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Firebase as full backend | Single platform for auth, database, storage — minimal backend code | — Pending |
-| TypeScript | Type safety, better DX, catches bugs early | — Pending |
-| Rich memories over minimal | User wants text + photos + links + location + tags + mood | — Pending |
-| All four discovery modes | Timeline, search, tags, and resurfacing all in v1 | — Pending |
+| Nanoid custom claims for data isolation | Security rules use `request.auth.token.projectKey` — clean, scalable pattern | — Pending |
+| Cloud Function for claim assignment | Claims require Admin SDK — Cloud Function triggers on user creation | — Pending |
+| Firebase as full backend | Single platform for auth, database, storage, functions | — Pending |
+| TypeScript | Type safety, better DX | — Pending |
 | 3-hour constraint | Ship fast — coarse phases, cut scope aggressively | — Pending |
-| Responsive from start | Memories happen on the go — can't be desktop-only | — Pending |
 
 ## Evolution
 
@@ -80,4 +75,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-24 after initialization*
+*Last updated: 2026-03-24 after architecture clarification (claims-based isolation)*
