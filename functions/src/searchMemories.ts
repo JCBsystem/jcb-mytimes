@@ -1,6 +1,9 @@
 /**
  * Server-side memory search endpoint.
  *
+ * Returns only matching document IDs — the client already holds the full
+ * memory objects via its real-time onSnapshot listener and filters locally.
+ *
  * DEMO / TIME-CONSTRAINED IMPLEMENTATION
  * ========================================
  * Firestore does not support native full-text search. In production, this
@@ -9,8 +12,14 @@
  * memories and filters in-memory — acceptable for a personal app with
  * hundreds of memories, but will not scale to tens of thousands.
  *
+ * TIME HACK: The client currently loads ALL memories via onSnapshot, so
+ * it could technically filter client-side without this function. We keep
+ * search server-side because in production the listener would be paginated
+ * (e.g. last 100 memories), and search needs to reach the full dataset.
+ * Returning IDs-only keeps the contract clean for that future.
+ *
  * Performance considerations applied:
- * - Only fetches the fields needed for search + display (select projection)
+ * - Only fetches searchable fields via select() projection — not full docs
  * - Compiles the search pattern once, not per-document
  * - Caps results at 50 to limit response size
  * - Short-circuits per-document: skips to next doc on first match
@@ -18,20 +27,6 @@
 
 import { getFirestore } from "firebase-admin/firestore";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-
-interface Memory {
-  id: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-  eventDate: string;
-  image?: string;
-  people?: string[];
-  tags?: string[];
-  mood?: number;
-  audioUrl?: string;
-  transcript?: string;
-}
 
 const MAX_RESULTS = 50;
 
@@ -62,26 +57,15 @@ export const searchMemories = onCall({ cors: true }, async (request) => {
   // Compile search term once — lowercase for case-insensitive matching
   const needle = query.trim().toLowerCase();
 
-  // --- Fetch all memories for this project ---
+  // --- Fetch only searchable fields (no full doc reads) ---
   const db = getFirestore();
   const snapshot = await db
-    .collection(`project/${projectKey}/data/memories`)
-    .select(
-      "text",
-      "transcript",
-      "people",
-      "tags",
-      "createdAt",
-      "updatedAt",
-      "eventDate",
-      "image",
-      "mood",
-      "audioUrl"
-    )
+    .collection(`project/${projectKey}/memories`)
+    .select("text", "transcript", "people", "tags", "eventDate")
     .get();
 
   // --- Filter in-memory with short-circuit per document ---
-  const matches: Memory[] = [];
+  const matches: { id: string; eventDate: string }[] = [];
 
   for (const doc of snapshot.docs) {
     const data = doc.data();
@@ -89,55 +73,34 @@ export const searchMemories = onCall({ cors: true }, async (request) => {
     // Short-circuit: check text first (most likely to match)
     const text: string = data.text ?? "";
     if (text.toLowerCase().includes(needle)) {
-      matches.push(docToMemory(doc.id, data));
-      continue; // next doc — no need to check remaining fields
+      matches.push({ id: doc.id, eventDate: data.eventDate ?? "" });
+      continue;
     }
 
     // Check transcript
     const transcript: string | undefined = data.transcript;
     if (transcript && transcript.toLowerCase().includes(needle)) {
-      matches.push(docToMemory(doc.id, data));
+      matches.push({ id: doc.id, eventDate: data.eventDate ?? "" });
       continue;
     }
 
     // Check people array
     const people: string[] | undefined = data.people;
     if (people && people.some((p: string) => p.toLowerCase().includes(needle))) {
-      matches.push(docToMemory(doc.id, data));
+      matches.push({ id: doc.id, eventDate: data.eventDate ?? "" });
       continue;
     }
 
     // Check tags array
     const tags: string[] | undefined = data.tags;
     if (tags && tags.some((t: string) => t.toLowerCase().includes(needle))) {
-      matches.push(docToMemory(doc.id, data));
-      // continue not needed — last check
+      matches.push({ id: doc.id, eventDate: data.eventDate ?? "" });
     }
   }
 
   // --- Sort by eventDate descending and cap at MAX_RESULTS ---
   matches.sort((a, b) => (b.eventDate > a.eventDate ? 1 : -1));
-  const results = matches.slice(0, MAX_RESULTS);
+  const ids = matches.slice(0, MAX_RESULTS).map((m) => m.id);
 
-  return { results };
+  return { ids };
 });
-
-/** Map a Firestore document to the Memory interface. */
-function docToMemory(
-  id: string,
-  data: FirebaseFirestore.DocumentData
-): Memory {
-  return {
-    id,
-    text: data.text ?? "",
-    createdAt: data.createdAt ?? "",
-    updatedAt: data.updatedAt ?? "",
-    eventDate: data.eventDate ?? "",
-    ...(data.image !== undefined && { image: data.image }),
-    ...(data.people !== undefined && { people: data.people }),
-    ...(data.tags !== undefined && { tags: data.tags }),
-    ...(data.mood !== undefined && { mood: data.mood }),
-    ...(data.audioUrl !== undefined && { audioUrl: data.audioUrl }),
-    ...(data.transcript !== undefined && { transcript: data.transcript }),
-  };
-}

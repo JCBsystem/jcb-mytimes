@@ -30,7 +30,7 @@
 ## Firestore Path
 
 ```
-project/{claimKey}/data/memories/{memoryId}
+project/{claimKey}/memories/{memoryId}
 ```
 
 ## Timeline Sort Order

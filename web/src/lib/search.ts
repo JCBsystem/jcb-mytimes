@@ -1,13 +1,21 @@
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@/lib/firebase";
-import type { Memory } from "@/types/memory";
 
-const searchCallable = httpsCallable<{ query: string }, { results: Memory[] }>(
+const searchCallable = httpsCallable<{ query: string }, { ids: string[] }>(
   functions,
   "searchMemories"
 );
 
-export async function searchMemories(query: string): Promise<Memory[]> {
+/**
+ * Calls the server-side search function and returns matching memory IDs.
+ * The client filters its already-loaded listener data by these IDs.
+ *
+ * TIME HACK: Currently the onSnapshot listener loads ALL memories, so
+ * client-side filtering would work too. We keep search server-side
+ * because in production the listener would be paginated, and search
+ * needs to reach the full dataset. This keeps the contract clean.
+ */
+export async function searchMemories(query: string): Promise<string[]> {
   const result = await searchCallable({ query });
-  return result.data.results;
+  return result.data.ids;
 }

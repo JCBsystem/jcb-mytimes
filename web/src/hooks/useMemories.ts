@@ -29,7 +29,7 @@ export function useMemories(projectKey: string | null): {
     setError(null);
 
     const q = query(
-      collection(db, "project", projectKey, "data", "memories"),
+      collection(db, "project", projectKey, "memories"),
       orderBy("eventDate", "desc"),
     );
 
