@@ -225,6 +225,7 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Capture a moment..."
+          data-testid="input-memory-text"
           className="min-w-0 flex-1 rounded-full bg-muted/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none focus:bg-muted/80 focus:ring-1 focus:ring-ring/30 transition-colors"
         />
 
@@ -238,6 +239,7 @@ export function BottomBar({ onSend, allTags }: BottomBarProps) {
           <Button
             size="icon"
             onClick={handleSend}
+            data-testid="btn-send-memory"
             className="shrink-0 rounded-full"
           >
             <ArrowUp className="size-4" />

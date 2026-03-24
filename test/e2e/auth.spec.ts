@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { createTestUser, signUp, login, logout, createProject, testId, tid } from "./helpers";
+import { createTestUser, signUp, login, logout, waitForProjectCreation, testId, tid } from "./helpers";
 
 test.describe("Auth", () => {
   const user = createTestUser();
@@ -18,7 +18,7 @@ test.describe("Auth", () => {
   test("login with email and password after project exists", async ({ page }) => {
     // First sign up and create project
     await signUp(page, user.email, user.password);
-    await createProject(page);
+    await waitForProjectCreation(page);
 
     // Logout
     await logout(page);
@@ -30,7 +30,7 @@ test.describe("Auth", () => {
 
   test("logout returns to login page", async ({ page }) => {
     await signUp(page, user.email, user.password);
-    await createProject(page);
+    await waitForProjectCreation(page);
     await logout(page);
     await expect(testId(page, tid.btnLogin)).toBeVisible();
   });

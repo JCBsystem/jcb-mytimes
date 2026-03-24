@@ -21,10 +21,8 @@ export const tid = {
   btnLogout: "btn-logout",
 
   // Memory
-  btnNewMemory: "btn-new-memory",
-  inputMemoryTitle: "input-memory-title",
-  inputMemoryNote: "input-memory-note",
-  btnSaveMemory: "btn-save-memory",
+  inputMemoryText: "input-memory-text",
+  btnSendMemory: "btn-send-memory",
   memoryItem: "memory-item",
 } as const;
 
@@ -73,17 +71,18 @@ export async function logout(page: Page) {
 }
 
 // --- Project ---
+// CreateProject auto-fires on mount — no button click needed.
+// After signup, wait for auto-project-creation to finish and land on dashboard.
 
-export async function createProject(page: Page) {
-  await testId(page, tid.btnCreateProject).click();
-  await expect(testId(page, tid.dashboardView)).toBeVisible();
+export async function waitForProjectCreation(page: Page) {
+  await page.waitForURL("/", { timeout: 15000 });
 }
 
-// --- Full setup: sign up + create project ---
+// --- Full setup: sign up + auto-create project ---
 
 export async function signUpAndCreateProject(page: Page, email: string, password: string) {
   await signUp(page, email, password);
-  await createProject(page);
+  await waitForProjectCreation(page);
 }
 
 // --- Test user factory ---

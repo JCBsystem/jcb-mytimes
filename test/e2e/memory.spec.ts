@@ -2,24 +2,17 @@ import { test, expect } from "@playwright/test";
 import { createTestUser, signUpAndCreateProject, testId, tid } from "./helpers";
 
 test.describe("Create Memory", () => {
-  const user = createTestUser();
-
   test("create a text memory", async ({ page }) => {
+    const user = createTestUser();
     await signUpAndCreateProject(page, user.email, user.password);
 
-    // Open create memory flow
-    await testId(page, tid.btnNewMemory).click();
+    // Type a memory
+    await testId(page, tid.inputMemoryText).fill("Beach sunset in Lofoten");
 
-    // Fill in memory content
-    await testId(page, tid.inputMemoryTitle).fill("Beach sunset in Lofoten");
-    await testId(page, tid.inputMemoryNote).fill(
-      "Golden hour light reflecting off the fjord, seagulls overhead."
-    );
+    // Send button appears after typing
+    await testId(page, tid.btnSendMemory).click();
 
-    // Save
-    await testId(page, tid.btnSaveMemory).click();
-
-    // Memory should appear in the list
+    // Memory should appear in the timeline
     await expect(testId(page, tid.memoryItem).first()).toContainText("Beach sunset in Lofoten");
   });
 });
