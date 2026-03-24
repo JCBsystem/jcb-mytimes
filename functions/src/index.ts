@@ -7,7 +7,9 @@ initializeApp();
 
 export { transcribeMemory } from "./transcribeMemory.js";
 export { uploadAudio } from "./uploadAudio.js";
+export { uploadImage } from "./uploadImage.js";
 export { searchMemories } from "./searchMemories.js";
+export { cdnImage } from "./cdnImage.js";
 
 export const createProject = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;

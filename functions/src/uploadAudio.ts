@@ -42,7 +42,9 @@ export const uploadAudio = onCall(async (request) => {
     );
   }
 
-  const extension = EXTENSION_MAP[contentType];
+  // Strip codec parameters (e.g. "audio/webm;codecs=opus" -> "audio/webm")
+  const baseContentType = contentType.split(";")[0].trim();
+  const extension = EXTENSION_MAP[baseContentType];
   if (!extension) {
     throw new HttpsError(
       "invalid-argument",
@@ -59,7 +61,7 @@ export const uploadAudio = onCall(async (request) => {
   try {
     const buffer = Buffer.from(audioBase64, "base64");
     await file.save(buffer, {
-      contentType,
+      contentType: baseContentType,
       metadata: {
         metadata: {
           uploadedBy: uid,
@@ -68,13 +70,13 @@ export const uploadAudio = onCall(async (request) => {
       },
     });
 
-    await file.makePublic();
-    const voiceUrl = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
+    // Serve via Firebase Hosting CDN rewrite
+    const voiceUrl = `/cdn/${projectKey}/audio/${memoryId}/${storagePath.split("/").pop()}`;
 
     // 5. Update Firestore document
     const db = getFirestore();
     await db
-      .doc(`project/${projectKey}/data/memories/${memoryId}`)
+      .doc(`project/${projectKey}/memories/${memoryId}`)
       .set(
         { voice: voiceUrl, updatedAt: FieldValue.serverTimestamp() },
         { merge: true }

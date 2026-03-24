@@ -15,6 +15,10 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/cdn/**",
+        "function": "cdnImage"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
