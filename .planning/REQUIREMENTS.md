@@ -21,13 +21,13 @@
 - [x] **MEM-04**: User can attach a mood/emoji to a memory
 - [ ] **MEM-05**: User can add a link to a memory
 - [ ] **MEM-06**: User can edit an existing memory
-- [ ] **MEM-07**: User can delete a memory
+- [x] **MEM-07**: User can delete a memory
 
 ### Real-time & Browsing
 
 - [x] **RT-01**: Firestore onSnapshot listeners at collection level for real-time updates
-- [ ] **BROWSE-01**: User can view memories in a chronological timeline feed
-- [ ] **BROWSE-02**: User can click a memory to see its full detail
+- [x] **BROWSE-01**: User can view memories in a chronological timeline feed
+- [x] **BROWSE-02**: User can click a memory to see its full detail
 
 ### Discovery
 
@@ -83,10 +83,10 @@
 | MEM-04 | Phase 2 | Complete |
 | MEM-05 | Phase 2 | Pending |
 | MEM-06 | Phase 2 | Pending |
-| MEM-07 | Phase 2 | Pending |
+| MEM-07 | Phase 2 | Complete |
 | RT-01 | Phase 2 | Complete |
-| BROWSE-01 | Phase 2 | Pending |
-| BROWSE-02 | Phase 2 | Pending |
+| BROWSE-01 | Phase 2 | Complete |
+| BROWSE-02 | Phase 2 | Complete |
 | DISC-01 | Phase 3 | Pending |
 | DISC-02 | Phase 3 | Pending |
 | DISC-03 | Phase 3 | Pending |
