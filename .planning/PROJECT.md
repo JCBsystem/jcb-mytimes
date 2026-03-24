@@ -65,6 +65,15 @@ Users can effortlessly capture a memory in the moment and rediscover it later �
 | TypeScript | Type safety, better DX | — Pending |
 | 3-hour constraint | Ship fast — coarse phases, cut scope aggressively | — Pending |
 
+## Known Bugs / Time Hacks
+
+| Issue | Impact | Fix |
+|-------|--------|-----|
+| Search reads ALL documents in-memory | Will not scale past ~1k memories | Replace with Algolia/Typesense/Meilisearch synced via Firestore triggers |
+| Firestore has no native full-text search | Server-side `searchMemories` Cloud Function does brute-force string matching | Same as above — dedicated search engine |
+| Tag filtering is client-side only | Works because onSnapshot loads all memories; breaks if listener is paginated | Move to server-side query or search engine |
+| Firestore field name mismatch: `voice`/`transcribedText` vs TypeScript `audioUrl`/`transcript` | Runtime fallback in MemoryRow handles both names | Align field names in Cloud Function or migration |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.

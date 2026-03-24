@@ -12,7 +12,6 @@ import { MemoriesProvider, useMemoriesContext } from "@/lib/memories-context.tsx
 import { searchMemories } from "@/lib/search.ts";
 import { usePwaInstall } from "@/hooks/usePwaInstall.ts";
 import { Download } from "lucide-react";
-import { toast } from "sonner";
 import type { Memory } from "@/types/memory.ts";
 
 function LoginRoute() {
@@ -66,12 +65,11 @@ function AppShell() {
   const [search, setSearch] = useState("");
   const [editingMemory, setEditingMemory] = useState<Memory | null>(null);
   const [matchedIds, setMatchedIds] = useState<Set<string> | null>(null);
-  const [searching, setSearching] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const handleSearch = useCallback(async (query: string) => {
     if (!query) {
       setMatchedIds(null);
-      setSearching(false);
       return;
     }
 
@@ -90,7 +88,6 @@ function AppShell() {
     setMatchedIds(clientIds);
 
     // Server search in parallel — may return additional hits
-    setSearching(true);
     try {
       const serverIds = await searchMemories(query);
       setMatchedIds(new Set([...clientIds, ...serverIds]));
@@ -98,14 +95,17 @@ function AppShell() {
       console.error("Search failed:", err);
       // Keep client results on server failure
     } finally {
-      setSearching(false);
     }
   }, [memories]);
 
-  // Filter listener data by matched IDs
-  const filtered = matchedIds !== null
+  // Filter by search results and/or selected tag (client-side)
+  let filtered = matchedIds !== null
     ? memories.filter((m) => matchedIds.has(m.id))
     : memories;
+
+  if (selectedTag) {
+    filtered = filtered.filter((m) => m.tags?.includes(selectedTag));
+  }
 
   // Compute tag suggestions from existing memories
   const allTags = useMemo(() => {
@@ -149,6 +149,35 @@ function AppShell() {
       </div>
       <div className="max-w-2xl mx-auto pt-14">
         <SearchBar value={search} onChange={setSearch} onSearch={handleSearch} />
+        {/* Tag filter — client-side filtering (DISC-02) */}
+        {allTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 px-5 py-2" data-testid="tag-filter">
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                data-testid={`tag-filter-${tag}`}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  selectedTag === tag
+                    ? "bg-stone-800 text-white"
+                    : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+            {selectedTag && (
+              <button
+                type="button"
+                onClick={() => setSelectedTag(null)}
+                className="rounded-full px-3 py-1 text-xs text-stone-400 hover:text-stone-600 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
         <Timeline memories={filtered} onDelete={handleDelete} onEdit={setEditingMemory} />
       </div>
       <BottomBar
